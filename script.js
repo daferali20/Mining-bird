@@ -1,14 +1,7 @@
 let web3;
 let contract;
-const contractAddress = "0x44463464fA30784A2798916B09F31e0565CC2f34";
+const contractAddress = "0x45aBD29e8A5C01c201eF2767545BAF636Ed5f7D6";
 const contractABI = [
-	{
-		"inputs": [],
-		"name": "claimRewards",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
 	{
 		"inputs": [
 			{
@@ -31,17 +24,39 @@ const contractABI = [
 			},
 			{
 				"internalType": "address",
-				"name": "_priceOracle",
+				"name": "_investmentAddress",
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "_rewardRatePerSecond",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "initialOwner",
+				"type": "address"
 			}
 		],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
 	},
 	{
 		"anonymous": false,
@@ -63,29 +78,22 @@ const contractABI = [
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "pauseContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "ethPrice",
-				"type": "uint256"
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "btcPrice",
+				"name": "amount",
 				"type": "uint256"
 			}
 		],
-		"name": "PriceUpdate",
+		"name": "FundsTransferred",
 		"type": "event"
 	},
 	{
@@ -94,157 +102,141 @@ const contractABI = [
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "user",
+				"name": "previousOwner",
 				"type": "address"
 			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "ethAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardClaimed",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "oldRate",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "newRate",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardRateChanged",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "newRate",
-				"type": "uint256"
-			}
-		],
-		"name": "setRewardRate",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "unpauseContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "updatePrices",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "ethAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "withdraw",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
 			{
 				"indexed": true,
 				"internalType": "address",
-				"name": "user",
+				"name": "newOwner",
 				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "ethAmount",
-				"type": "uint256"
 			}
 		],
-		"name": "Withdraw",
+		"name": "OwnershipTransferred",
 		"type": "event"
 	},
 	{
-		"stateMutability": "payable",
-		"type": "receive"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "userAddress",
-				"type": "address"
-			}
-		],
-		"name": "calculateRewards",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "reward",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "userAddress",
-				"type": "address"
-			}
-		],
-		"name": "getBalance",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "usdtBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "ethBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "rewards",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
 		"inputs": [],
-		"name": "isPaused",
+		"name": "transferFundsToInvestment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "annualReturnRate",
 		"outputs": [
 			{
-				"internalType": "bool",
+				"internalType": "uint256",
 				"name": "",
-				"type": "bool"
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getAllInvestors",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "userAddress",
+				"type": "address"
+			}
+		],
+		"name": "getUserData",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "depositAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "depositTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "estimatedReturn",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "investmentAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "investmentPeriod",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "investors",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -258,45 +250,6 @@ const contractABI = [
 				"internalType": "address",
 				"name": "",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "priceOracle",
-		"outputs": [
-			{
-				"internalType": "contract IPriceOracle",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "rewardRatePerSecond",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalDepositedUSDT",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -327,12 +280,7 @@ const contractABI = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "usdtBalance",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "ethBalance",
+				"name": "depositAmount",
 				"type": "uint256"
 			},
 			{
@@ -341,14 +289,9 @@ const contractABI = [
 				"type": "uint256"
 			},
 			{
-				"internalType": "uint256",
-				"name": "totalReward",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "claimedReward",
-				"type": "uint256"
+				"internalType": "bool",
+				"name": "isInvestor",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -356,69 +299,39 @@ const contractABI = [
 	}
 ];
 
-window.addEventListener("load", async () => {
+async function connectWallet() {
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        document.getElementById("walletStatus").innerText = `Connected: ${accounts[0]}`;
+        contract = new web3.eth.Contract(contractABI, contractAddress);
+        fetchUSDTBalance(accounts[0]);
     } else {
         alert("Please install MetaMask!");
     }
-});
-
-function connectWallet() {
-    if (web3) {
-        web3.eth.requestAccounts().then(accounts => {
-            document.getElementById("walletStatus").innerText = `Connected: ${accounts[0]}`;
-            contract = new web3.eth.Contract(contractABI, contractAddress);
-        }).catch(error => console.error(error));
-    }
 }
 
-function showPage(pageId) {
-    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-    document.getElementById(pageId).classList.add("active");
-}
-
-async function depositUSDT() {
-    const accounts = await web3.eth.getAccounts();
-    const amount = web3.utils.toWei("10", "ether");
-    await contract.methods.deposit(amount).send({ from: accounts[0] });
-    alert("Deposit successful!");
-}
-
-async function claimRewards() {
-    const accounts = await web3.eth.getAccounts();
-    await contract.methods.claimRewards().send({ from: accounts[0] });
-    alert("Rewards claimed!");
-}
-
-//------------------------------
-
-async function approveTransfer() {
-    const accounts = await web3.eth.getAccounts();
-    const balance = await contract.methods.getBalance(accounts[0]).call();
-    document.getElementById("totalBalance").innerText = web3.utils.fromWei(balance.usdtBalance, 'ether') + " USDT";
-
-    // Approval logic here for admin only
-}
-
-function showPage(pageId) {
-    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
-    document.getElementById(pageId).classList.add("active");
-}
 async function fetchUSDTBalance(userAddress) {
     const balance = await contract.methods.balanceOf(userAddress).call();
     document.getElementById("usdtBalance").innerText = web3.utils.fromWei(balance, 'ether') + " USDT";
 }
 
-async function transferBalance(recipient, amount) {
+async function depositUSDT() {
+    const amount = document.getElementById("depositAmount").value;
     const accounts = await web3.eth.getAccounts();
-    const amountInWei = web3.utils.toWei(amount.toString(), "ether");
+    const amountInWei = web3.utils.toWei(amount, 'ether');
 
-    try {
-        await contract.methods.transfer(recipient, amountInWei).send({ from: accounts[0] });
-        alert("Transfer successful!");
-        await fetchUSDTBalance(accounts[0]); // Refresh balance after transfer
-    } catch (error) {
-        console.error("Transfer failed:", error);
-    }
+    await contract.methods.deposit(amountInWei).send({ from: accounts[0] });
+    alert(`Deposited ${amount} USDT`);
+    fetchUSDTBalance(accounts[0]);
+}
+
+async function calculateProjectedReturn(userAddress) {
+    const userData = await contract.methods.getUserData(userAddress).call();
+    document.getElementById("projectedReturn").innerText = `${web3.utils.fromWei(userData.projectedReturn, 'ether')} USDT`;
+}
+
+function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+    document.getElementById(pageId).classList.add("active");
 }
