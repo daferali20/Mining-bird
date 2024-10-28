@@ -1,6 +1,6 @@
 let web3;
 let contract;
-const contractAddress = "0x45aBD29e8A5C01c201eF2767545BAF636Ed5f7D6";
+const contractAddress = "0xCbD6AA9ee09B2f9e89787aEF3C2Ac09d5285ea0f";
 const contractABI = [
 	{
 		"inputs": [
@@ -25,11 +25,6 @@ const contractABI = [
 			{
 				"internalType": "address",
 				"name": "_investmentAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "initialOwner",
 				"type": "address"
 			}
 		],
