@@ -8,7 +8,7 @@ await usdtContract.methods.approve(cryptoInvestmentAddress, amount).send({ from:
 
 let web3;
 let contract;
-const contractAddress = "0xBdE1CDc51251019343007AD968DA702C2562a86C";
+const contractAddress = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
 const contractABI = [
 	{
 		"inputs": [
