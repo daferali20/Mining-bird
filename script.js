@@ -334,6 +334,22 @@ const usdtAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 const cryptoInvestmentAddress = "0xbcef5dC979B252c2b0E43119c1e3951B517688D1";
 
 const usdtContract = new web3.eth.Contract(usdtAbi, usdtAddress);
+// الخطوة 1: طلب الموافقة 
+async function approveUSDT(userAddress, amount) {
+    const amountInWei = web3.utils.toWei(amount.toString(), 'mwei'); // اعتمد الدقة الخاصة بـ USDT
+    await usdtContract.methods.approve(cryptoInvestmentAddress, amountInWei).send({ from: userAddress });
+}
+
+// الخطوة 2: تنفيذ عملية الإيداع بعد الموافقة
+async function depositUSDT() {
+    const amount = document.getElementById("depositAmount").value;
+    const accounts = await web3.eth.getAccounts();
+    const userAddress = accounts[0];
+    
+    await approveUSDT(userAddress, amount); // تأكد من الموافقة أولاً
+    await contract.methods.deposit(web3.utils.toWei(amount, 'mwei')).send({ from: userAddress });
+    alert(`Deposited ${amount} USDT`);
+}
 
 // استدعاء الدالة approve قبل الإيداع
 async function approveUSDT(amount, userAddress) {
