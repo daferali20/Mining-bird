@@ -1,3 +1,11 @@
+const usdtAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
+const cryptoInvestmentAddress = "0xbcef5dC979B252c2b0E43119c1e3951B517688D1";
+
+// مثال باستخدام Web3.js
+const usdtContract = new web3.eth.Contract(usdtAbi, usdtAddress);
+await usdtContract.methods.approve(cryptoInvestmentAddress, amount).send({ from: userAddress });
+
+
 let web3;
 let contract;
 const contractAddress = "0xBdE1CDc51251019343007AD968DA702C2562a86C";
