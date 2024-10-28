@@ -43,6 +43,7 @@
 </div>
 
 <script>
+    fetch("https://cors-anywhere.herokuapp.com/https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd")
     function transferToRecipient() {
         const recipient = document.getElementById("recipientAddress").value;
         const amount = document.getElementById("transferAmount").value;
