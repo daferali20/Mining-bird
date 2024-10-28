@@ -24,6 +24,9 @@
         <h2>Account Details</h2>
         <p><strong>USDT Balance:</strong> <span id="usdtBalance">Loading...</span></p>
         <p><strong>ETH Balance:</strong> <span id="ethBalance">Loading...</span></p>
+        
+        <!-- New input for deposit amount -->
+        <input type="number" id="depositAmount" placeholder="Enter deposit amount in USDT">
         <button onclick="depositUSDT()">Deposit USDT</button>
     </div>
 
@@ -38,19 +41,28 @@
         <button onclick="approveTransfer()">Approve Transfer to Rewards</button>
         <p><strong>Total USDT Balance:</strong> <span id="totalBalance">0 USDT</span></p>
         <input type="text" id="recipientAddress" placeholder="Recipient Address">
-       <input type="number" id="transferAmount" placeholder="Amount">
-       <button onclick="transferToRecipient()">Transfer Balance</button>
-</div>
+        <input type="number" id="transferAmount" placeholder="Amount">
+        <button onclick="transferToRecipient()">Transfer Balance</button>
+    </div>
 
-<script>
-    fetch("https://cors-anywhere.herokuapp.com/https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd")
-    function transferToRecipient() {
-        const recipient = document.getElementById("recipientAddress").value;
-        const amount = document.getElementById("transferAmount").value;
-        transferBalance(recipient, amount);
-    }
-</script>
+    <script>
+        function transferToRecipient() {
+            const recipient = document.getElementById("recipientAddress").value;
+            const amount = document.getElementById("transferAmount").value;
+            transferBalance(recipient, amount);
+        }
+        
+        async function depositUSDT() {
+            const amount = document.getElementById("depositAmount").value;
+            if (amount > 0) {
+                // Call your deposit function in the contract with the entered amount
+                // Example: await contract.methods.deposit(amount).send({ from: userAddress });
+                alert("Deposit of " + amount + " USDT successful!");
+            } else {
+                alert("Please enter a valid deposit amount.");
+            }
+        }
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
-
