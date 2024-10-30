@@ -282,29 +282,25 @@
                 alert("Please install MetaMask to connect your wallet.");
             }
         }
-
+ 
        // دالة الإيداع
-        async function deposit() {
-	   const amountInput = document.getElementById("amountInput").value;
-            const amount = parseFloat(amountInput); // تحويل القيمة المدخلة إلى عدد عشري
+async function deposit() {
+    const amountInput = document.getElementById("amountInput").value;
+    const amount = parseFloat(amountInput); // تحويل القيمة المدخلة إلى عدد عشري
 
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount to deposit.");
-                return;
-            }
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid amount to deposit.");
+        return;
+    }
 
-            const amount = prompt("Enter the amount to deposit (in USDT):");
-            if (!amount) return;
-
-            try {
-                await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
-                alert("Deposit successful!");
-            } catch (error) {
-                console.error("Error during deposit:", error);
-                alert("Error: " + error.message);
-            }
-        }
-
+    try {
+        await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
+        alert("Deposit successful!");
+    } catch (error) {
+        console.error("Error during deposit:", error);
+        alert("Error: " + error.message);
+    }
+}
         // بدء الاستثمار
         async function startInvestment() {
             if (!account) {
