@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control - DApp</title>
+</head>
+<body>
+    <h1>Admin Control - DApp</h1>
+
+    <!-- قسم تسجيل الدخول -->
+    <div id="loginForm">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- قسم التحكم بالصفحة يظهر فقط بعد تسجيل الدخول -->
+    <div id="adminControls" style="display: none;">
+        <button onclick="approveWithdrawal()">Approve Withdrawal</button>
+        <button onclick="withdrawYield()">Withdraw Yield</button>
+        <button onclick="executeWithdrawal()">Execute Withdrawal</button>
+    </div>
+
+    <!-- تحميل مكتبة Web3.js -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+    <!-- تحميل ملف auth.js -->
+    <script src="auth.js"></script>
+    <!-- إعدادات العقد ووظائف التحكم -->
+    <script>
+        // إعداد Web3
+        let web3;
+        if (window.ethereum) {
+            web3 = new Web3(window.ethereum);
+            window.ethereum.enable();
+        } else {
+            alert("Please install MetaMask to use this DApp!");
+        }
+
+        // إعداد عنوان العقد و ABI
+        const contractAddress = "YOUR_CONTRACT_ADDRESS"; // ضع عنوان عقدك هنا
+        const contractABI = [ /* ضع ABI الخاص بالعقد هنا */ ];
+
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+        // التأكد من حساب المستخدم
+        async function getAccount() {
+            const accounts = await web3.eth.getAccounts();
+            return accounts[0];
+        }
+
+        async function approveWithdrawal() {
+            const account = await getAccount();
+            contract.methods.approveWithdrawal().send({ from: account })
+                .then(() => alert("Withdrawal approved successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        async function withdrawYield() {
+            const account = await getAccount();
+            contract.methods.withdrawYield().send({ from: account })
+                .then(() => alert("Yield withdrawn successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        async function executeWithdrawal() {
+            const account = await getAccount();
+            const amount = prompt("Enter the amount to withdraw (in USDT):");
+            if (!amount) return;
+
+            contract.methods.executeWithdrawal(web3.utils.toWei(amount, 'mwei')).send({ from: account })
+                .then(() => alert("Withdrawal executed successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
+    </script>
+</body>
+</html>
