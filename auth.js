@@ -2,7 +2,7 @@
 
 // بيانات تسجيل الدخول للمالك
 const adminUsername = "Admin1"; // اسم المستخدم
-const adminPassword = "@#Q123456"; // كلمة المرور
+const adminPassword = "123456"; // كلمة المرور
 
 // دالة تسجيل الدخول
 function login() {
