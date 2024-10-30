@@ -259,7 +259,7 @@
 	}
 ];
 
-        // الاتصال بالمحفظة
+       // الاتصال بمحفظة المستخدم
         async function connectWallet() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -269,45 +269,72 @@
                     account = accounts[0];
                     document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
 
-                    // إعداد العقد
+                    // إعداد الكائن contract للاتصال بالعقد
                     contract = new web3.eth.Contract(contractABI, contractAddress);
 
                     // تحديث الأرصدة بعد الاتصال
                     updateBalances();
                 } catch (error) {
                     console.error("User denied account access", error);
+                    alert("Could not connect to wallet. Please allow access.");
                 }
             } else {
                 alert("Please install MetaMask to connect your wallet.");
             }
         }
 
+        // وظيفة الإيداع
         async function deposit() {
+            if (!account) {
+                alert("Please connect your wallet first.");
+                return;
+            }
+
             const amount = prompt("Enter the amount to deposit (in USDT):");
             if (!amount) return;
 
             contract.methods.deposit(web3.utils.toWei(amount, 'mwei')).send({ from: account })
                 .then(() => alert("Deposit successful"))
-                .catch(error => alert("Error: " + error.message));
+                .catch(error => {
+                    console.error("Error in deposit transaction", error);
+                    alert("Error: " + error.message);
+                });
         }
 
+        // بدء الاستثمار
         async function startInvestment() {
+            if (!account) {
+                alert("Please connect your wallet first.");
+                return;
+            }
+
             contract.methods.startInvestment().send({ from: account })
                 .then(() => alert("Investment started successfully"))
-                .catch(error => alert("Error: " + error.message));
+                .catch(error => {
+                    console.error("Error in start investment", error);
+                    alert("Error: " + error.message);
+                });
         }
 
+        // تحديث الأرصدة
         async function updateBalances() {
-            const walletBalance = await contract.methods.walletBalance().call({ from: account });
-            const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
-            const yieldRate = await contract.methods.yieldRate().call();
+            if (!account || !contract) return;
 
-            document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'mwei');
-            document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'mwei');
-            document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+            try {
+                const walletBalance = await contract.methods.walletBalance().call({ from: account });
+                const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
+                const yieldRate = await contract.methods.yieldRate().call();
+
+                document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'mwei');
+                document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'mwei');
+                document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+            } catch (error) {
+                console.error("Error updating balances", error);
+            }
         }
 
-        setInterval(updateBalances, 5000); // تحديث المعلومات كل 5 ثوانٍ
+        // تحديث المعلومات بشكل مستمر
+        setInterval(updateBalances, 5000);
     </script>
 
     <!-- روابط للصفحات -->
