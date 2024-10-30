@@ -3,33 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Investment Platform</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <title>User Page - DApp</title>
 </head>
 <body>
-    <div class="navbar">
-        <button onclick="showPage('home')">Home</button>
-        <button onclick="showPage('account')">My Account</button>
-    </div>
+    <h1>User Page - DApp</h1>
+    <button onclick="deposit()">Deposit</button>
+    <button onclick="startInvestment()">Start Investment</button>
 
-    <div id="home" class="page active">
-        <h1>Crypto Investment Pool</h1>
-        <p>Earn 55% return on USDT over 12 months by investing in Solana.</p>
-        <button onclick="connectWallet()">Connect Wallet</button>
-        <p id="walletStatus">Not Connected</p>
-    </div>
+    <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
+    <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
+    <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
 
-    <div id="account" class="page">
-        <h2>Account Summary</h2>
-        <p><strong>USDT Balance:</strong> <span id="usdtBalance">Loading...</span></p>
-        <input type="number" id="depositAmount" placeholder="Enter amount to deposit">
-        <button onclick="depositUSDT()">Deposit USDT</button>
-        
-        <h3>Projected Return:</h3>
-        <p><strong>Projected Return:</strong> <span id="projectedReturn">Calculating...</span></p>
-    </div>
+    <script>
+        async function deposit() {
+            const account = await getAccount();
+            const amount = prompt("Enter the amount to deposit (in USDT):");
+            if (!amount) return;
 
-    <script src="script.js"></script>
+            // هنا نفترض أنك قد قمت بإعداد الدالة deposit في العقد لاستقبال المدفوعات
+            contract.methods.deposit(web3.utils.toWei(amount, 'mwei')).send({ from: account })
+                .then(() => alert("Deposit successful"))
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        async function startInvestment() {
+            const account = await getAccount();
+            contract.methods.startInvestment().send({ from: account })
+                .then(() => alert("Investment started successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
+
+        async function updateBalances() {
+            const walletBalance = await contract.methods.walletBalance().call();
+            const investmentBalance = await contract.methods.investmentBalance().call();
+            const yieldRate = await contract.methods.yieldRate().call();
+
+            document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'mwei');
+            document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'mwei');
+            document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+        }
+
+        updateBalances();
+        setInterval(updateBalances, 5000); // تحديث المعلومات كل 5 ثوانٍ
+    </script>
 </body>
 </html>
