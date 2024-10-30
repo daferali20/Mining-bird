@@ -5,16 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <title>User Page - DApp</title>
+<script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script> <!-- إضافة مكتبة web3.js -->
 </head>
 <body>
     <h1>User Page - DApp</h1>
+
+    <!-- زر الاتصال بالمحفظة -->
+    <button onclick="connectWallet()">Connect Wallet</button>
+    <p id="walletAddress">Wallet Address: Not Connected</p>
+
     <button onclick="deposit()">Deposit</button>
     <button onclick="startInvestment()">Start Investment</button>
 
     <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
     <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
     <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
-
     <script>
         async function deposit() {
             const account = await getAccount();
