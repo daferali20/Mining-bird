@@ -20,7 +20,28 @@
     <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
     <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
     <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
+ <script>
+        async function connectWallet() {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                try {
+                    await window.ethereum.request({ method: 'eth_requestAccounts' });
+                    const accounts = await web3.eth.getAccounts();
+                    document.getElementById("walletAddress").innerText = `Wallet Address: ${accounts[0]}`;
+                } catch (error) {
+                    console.error("User denied account access", error);
+                }
+            } else {
+                alert("Please install MetaMask to connect your wallet.");
+            }
+        }
 
+        // التأكد من وجود الزر وإضافة الحدث
+        const connectButton = document.getElementById("connectWallet");
+        if (connectButton) {
+            connectButton.addEventListener("click", connectWallet);
+        }
+    </script>
     <script>
         let web3;
         let account;
