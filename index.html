@@ -246,102 +246,66 @@
 	}
 ];
 
-        async function connectWallet() {
-            if (window.ethereum) {
-                web3 = new Web3(window.ethereum);
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const accounts = await web3.eth.getAccounts();
-                account = accounts[0];
-                document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
-                contract = new web3.eth.Contract(contractABI, contractAddress);
-                updateBalances();
-            } else {
-                alert("Please install MetaMask to connect your wallet.");
-            }
+        // الاتصال بالمحفظة
+async function connectWallet() {
+    if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
+        try {
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await web3.eth.getAccounts();
+            account = accounts[0];
+            document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
+
+            contract = new web3.eth.Contract(contractABI, contractAddress);
+            updateBalances();
+        } catch (error) {
+            console.error("Error connecting to wallet:", error);
+            alert("Could not connect to wallet. Please try again.");
         }
+    } else {
+        alert("Please install MetaMask to connect your wallet.");
+    }
+}
 
-        async function deposit() {
-            const amountInput = document.getElementById("amountInput").value;
-            const amount = parseFloat(amountInput);
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount.");
-                return;
-            }
+// دالة الإيداع باستخدام ETH
+async function deposit() {
+    const amountInput = document.getElementById("amountInput").value;
+    const amount = parseFloat(amountInput);
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+    }
 
-            try {
-                await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
-                alert("Deposit successful!");
-                updateBalances();
-            } catch (error) {
-                console.error("Error during deposit:", error);
-                alert("Error: " + error.message);
-            }
-        }
+    try {
+        // استدعاء `deposit` مع إرسال قيمة ETH
+        await contract.methods.deposit().send({
+            from: account,
+            value: web3.utils.toWei(amount.toString(), 'ether')
+        });
+        alert("Deposit successful!");
+        updateBalances();
+    } catch (error) {
+        console.error("Error during deposit:", error);
+        alert("Error: " + error.message);
+    }
+}
 
-        async function startInvestment() {
-            try {
-                await contract.methods.startInvestment().send({ from: account });
-                alert("Investment started successfully");
-                updateBalances();
-            } catch (error) {
-                console.error("Error in starting investment:", error);
-                alert("Error: " + error.message);
-            }
-        }
+// تحديث الأرصدة
+async function updateBalances() {
+    try {
+        const walletBalance = await contract.methods.walletBalance().call();
+        const investmentBalance = await contract.methods.investmentBalance().call();
+        const yieldRate = await contract.methods.yieldRate().call();
 
-        async function approveWithdrawal() {
-            try {
-                await contract.methods.approveWithdrawal().send({ from: account });
-                alert("Withdrawal approved!");
-            } catch (error) {
-                console.error("Error in approving withdrawal:", error);
-                alert("Error: " + error.message);
-            }
-        }
+        document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether');
+        document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether');
+        document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+    } catch (error) {
+        console.error("Error updating balances:", error);
+    }
+}
 
-        async function withdrawYield() {
-            try {
-                await contract.methods.withdrawYield().send({ from: account });
-                alert("Yield withdrawn successfully!");
-                updateBalances();
-            } catch (error) {
-                console.error("Error in withdrawing yield:", error);
-                alert("Error: " + error.message);
-            }
-        }
 
-        async function executeWithdrawal() {
-            const amountInput = document.getElementById("withdrawAmount").value;
-            const amount = parseFloat(amountInput);
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid amount to withdraw.");
-                return;
-            }
-
-            try {
-                await contract.methods.executeWithdrawal(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
-                alert("Withdrawal executed successfully!");
-                updateBalances();
-            } catch (error) {
-                console.error("Error in executing withdrawal:", error);
-                alert("Error: " + error.message);
-            }
-        }
-
-        async function updateBalances() {
-            try {
-                const walletBalance = await contract.methods.walletBalance().call();
-                const investmentBalance = await contract.methods.investmentBalance().call();
-                const yieldRate = await contract.methods.yieldRate().call();
-
-                document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'mwei');
-                document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'mwei');
-                document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
-            } catch (error) {
-                console.error("Error updating balances", error);
-            }
-        }
-        
         // تحديث المعلومات بشكل دوري
         setInterval(updateBalances, 9000);
     </script>
