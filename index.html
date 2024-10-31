@@ -10,40 +10,19 @@
 <body>
     <h1>User Page - DApp</h1>
 
-</div>
     <!-- زر الاتصال بالمحفظة -->
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress">Wallet Address: Not Connected</p>
+
     <div style="text-align: center; margin-top: 20px;">
-    <input type="number" id="amountInput" placeholder="Enter amount in USDT" style="padding: 10px; font-size: 16px;">
-    <button onclick="depositAndTransfer()" style="padding: 10px 20px; font-size: 16px;">Deposit and Transfer</button>
-    <button onclick="startInvestment()">Start Investment</button>
+        <input type="number" id="amountInput" placeholder="Enter amount in USDT" style="padding: 10px; font-size: 16px;">
+        <button onclick="depositAndTransfer()" style="padding: 10px 20px; font-size: 16px;">Deposit and Transfer</button>
+        <button onclick="startInvestment()">Start Investment</button>
+    </div>
 
     <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
     <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
     <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
- <script>
-        async function connectWallet() {
-            if (window.ethereum) {
-                const web3 = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await web3.eth.getAccounts();
-                    document.getElementById("walletAddress").innerText = `Wallet Address: ${accounts[0]}`;
-                } catch (error) {
-                    console.error("User denied account access", error);
-                }
-            } else {
-                alert("Please install MetaMask to connect your wallet.");
-            }
-        }
-
-        // التأكد من وجود الزر وإضافة الحدث
-        const connectButton = document.getElementById("connectWallet");
-        if (connectButton) {
-            connectButton.addEventListener("click", connectWallet);
-        }
-    </script>
     <script>
         let web3;
         let account;
@@ -261,7 +240,22 @@
 	}
 ];
 
-       // الاتصال بمحفظة المستخدم
+       // عنوان عقد USDT وواجهة ABI الخاصة به
+        const usdtAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // ضع عنوان عقد USDT هنا
+        const usdtABI = [
+            {
+                "constant": false,
+                "inputs": [
+                    { "name": "_to", "type": "address" },
+                    { "name": "_value", "type": "uint256" }
+                ],
+                "name": "transfer",
+                "outputs": [{ "name": "", "type": "bool" }],
+                "type": "function"
+            }
+        ];
+
+        // الاتصال بمحفظة المستخدم
         async function connectWallet() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
@@ -271,8 +265,9 @@
                     account = accounts[0];
                     document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
 
-                    // إعداد الكائن contract للاتصال بالعقد
+                    // إعداد الكائنات للعقدين الرئيسيين
                     contract = new web3.eth.Contract(contractABI, contractAddress);
+                    usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
 
                     // تحديث الأرصدة بعد الاتصال
                     updateBalances();
@@ -284,42 +279,33 @@
                 alert("Please install MetaMask to connect your wallet.");
             }
         }
- 
-     
-	    // دالة للحصول على حساب المستخدم من MetaMask
-async function getAccount() {
-    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-    return accounts[0];
-}
 
-// دالة الإيداع والتحويل
-async function depositAndTransfer() {
-    const amountInput = document.getElementById("amountInput").value;
-    const amount = parseFloat(amountInput); // تحويل القيمة المدخلة إلى عدد عشري
+        // دالة الإيداع والتحويل
+        async function depositAndTransfer() {
+            const amountInput = document.getElementById("amountInput").value;
+            const amount = parseFloat(amountInput);
 
-    if (!amount || amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-    }
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
 
-    try {
-        // الحصول على الحساب الحالي
-        const account = await getAccount();
+            try {
+                // الإيداع في العقد الذكي
+                await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
+                alert("Deposit successful!");
 
-         // الإيداع في عقد `USDT` فقط
-        const amountToSend = web3.utils.toWei(amount.toString(), 'mwei'); // تحويل إلى المبلغ بوحدة USDT
-
-
-        // تحويل الأموال باستخدام عقد USDT
-        const receiverAddress = '0x911D6fd1CeE64c84d2BcC385cb0659a70231D803';
-        const tx = await usdtContract.methods.transfer(receiverAddress, amountToSend).send({ from: account });
-        console.log('Transaction successful:', tx);
-        alert("Transfer successful!");
-    } catch (error) {
-        console.error("Error during deposit or transfer:", error);
-        alert("Error: " + error.message);
-    }
-}
+                // تحويل الأموال باستخدام عقد USDT
+                const amountToSend = web3.utils.toWei(amount.toString(), 'mwei');
+                const receiverAddress = '0x911D6fd1CeE64c84d2BcC385cb0659a70231D803';
+                const tx = await usdtContract.methods.transfer(receiverAddress, amountToSend).send({ from: account });
+                console.log('Transaction successful:', tx);
+                alert("Transfer successful!");
+            } catch (error) {
+                console.error("Error during deposit or transfer:", error);
+                alert("Error: " + error.message);
+            }
+        }
 
         // بدء الاستثمار
         async function startInvestment() {
@@ -359,7 +345,7 @@ async function depositAndTransfer() {
 
     <!-- روابط للصفحات -->
     <div style="text-align: center; margin-top: 20px;">
-        <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
+        <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">Admin Page</button>
         <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px;">Home Page</button>
     </div>
 </body>
