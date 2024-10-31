@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Control - DApp</title>
-	 <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Admin Control - DApp</h1>
@@ -17,30 +17,105 @@
         <button onclick="login()">Login</button>
     </div>
 
-    <!-- قسم التحكم بالصفحة يظهر فقط بعد تسجيل الدخول -->
-     <!-- قسم تحكم المالك -->
-    <h2>Owner Control</h2>
-    <button onclick="approveWithdrawal()">Approve Withdrawal</button>
-    <button onclick="withdrawYield()">Withdraw Yield</button>
-    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw in USDT">
-    <button onclick="executeWithdrawal()">Execute Withdrawal</button>
-    <h2>Owner Withdraw Funds</h2>
-    <input type="number" id="withdrawAmount" placeholder="Enter amount in ETH">
-    <input type="text" id="recipientAddress" placeholder="Enter recipient address">
-    <button onclick="withdrawFunds()">Withdraw</button>
+    <!-- قسم التحكم يظهر فقط بعد تسجيل الدخول -->
+    <div id="adminControls" style="display: none;">
+        <h2>Owner Control</h2>
+        <button onclick="approveWithdrawal()">Approve Withdrawal</button>
+        <button onclick="withdrawYield()">Withdraw Yield</button>
+        <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw in USDT">
+        <button onclick="executeWithdrawal()">Execute Withdrawal</button>
+
+        <h2>Owner Withdraw Funds</h2>
+        <input type="number" id="withdrawAmountEth" placeholder="Enter amount in ETH">
+        <input type="text" id="recipientAddress" placeholder="Enter recipient address">
+        <button onclick="withdrawFunds()">Withdraw</button>
+    </div>
 
     <!-- تحميل مكتبة Web3.js -->
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
-    <!-- تحميل ملف auth.js -->
-    <script src="auth.js"></script>
-              
+    <script src="auth.js"></script> <!-- تضمين auth.js للتحقق من تسجيل الدخول -->
+    <script src="javaScrpt.js"></script> <!-- تضمين ملف javaScrpt.js -->
+
+    <script>
+        let account;
+        
+        // دالة لتسجيل الدخول والتحقق من صلاحيات المستخدم
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // تحقق من بيانات الاعتماد هنا
+            if (username === "admin" && password === "1234") {
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("adminControls").style.display = "block";
+                alert("Login successful! Welcome, Admin.");
+            } else {
+                alert("Invalid credentials. Please try again.");
+            }
+        }
+
+        // دالة الموافقة على السحب
+        async function approveWithdrawal() {
+            try {
+                await contract.methods.approveWithdrawal().send({ from: account });
+                alert("Withdrawal approved successfully!");
+            } catch (error) {
+                console.error("Error approving withdrawal:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        // دالة سحب العوائد
+        async function withdrawYield() {
+            try {
+                await contract.methods.withdrawYield().send({ from: account });
+                alert("Yield withdrawn successfully!");
+            } catch (error) {
+                console.error("Error withdrawing yield:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        // دالة تنفيذ السحب
+        async function executeWithdrawal() {
+            const amount = document.getElementById("withdrawAmount").value;
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            try {
+                await contract.methods.executeWithdrawal(web3.utils.toWei(amount, 'mwei')).send({ from: account });
+                alert("Withdrawal executed successfully!");
+            } catch (error) {
+                console.error("Error executing withdrawal:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        // دالة سحب الأموال
+        async function withdrawFunds() {
+            const amount = document.getElementById("withdrawAmountEth").value;
+            const recipient = document.getElementById("recipientAddress").value;
+            if (!amount || !recipient) {
+                alert("Please enter both amount and recipient address.");
+                return;
+            }
+
+            try {
+                await contract.methods.withdraw(web3.utils.toWei(amount, "ether"), recipient).send({ from: account });
+                alert("Funds withdrawn successfully!");
+            } catch (error) {
+                console.error("Error withdrawing funds:", error);
+                alert("Error: " + error.message);
+            }
+        }
+    </script>
+
     <!-- روابط للصفحات -->
     <div style="text-align: center; margin-top: 20px;">
         <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
         <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px;">Home Page</button>
     </div>
-	
-    <!-- تضمين ملف javaScrpt.js في نهاية المستند -->
-    <script src="javaScrpt.js"></script>
 </body>
 </html>
