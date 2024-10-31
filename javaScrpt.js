@@ -251,6 +251,8 @@ async function connectWallet() {
         alert("Please install MetaMask to connect your wallet.");
     }
 }
+const gasEstimate = await contract.methods.myFunction().estimateGas({ from: account });
+const result = await contract.methods.myFunction().send({ from: account, gas: gasEstimate });
 // دالة الإيداع باستخدام ETH
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
