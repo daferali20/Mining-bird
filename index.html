@@ -271,17 +271,19 @@ async function connectWallet() {
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
+    
     if (!amount || amount <= 0) {
         alert("Please enter a valid amount.");
         return;
     }
 
     try {
-        // استدعاء `deposit` مع إرسال قيمة ETH
+        // تأكد من إعداد `value` بشكل صحيح كجزء من كائن `send`
         await contract.methods.deposit().send({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether')
+            value: web3.utils.toWei(amount.toString(), 'ether') // هنا يتم تحديد `value` بالقيمة الصحيحة
         });
+        
         alert("Deposit successful!");
         updateBalances();
     } catch (error) {
@@ -289,7 +291,6 @@ async function deposit() {
         alert("Error: " + error.message);
     }
 }
-
 // تحديث الأرصدة
 async function updateBalances() {
     try {
