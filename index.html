@@ -313,13 +313,15 @@ async function startInvestment() {
 // تحديث الأرصدة
 async function updateBalances() {
     try {
-        const walletBalance = await contract.methods.walletBalance().call();
-        const investmentBalance = await contract.methods.investmentBalance().call();
-        const yieldRate = await contract.methods.yieldRate().call();
+	console.log("Fetching balances from contract...");
+	    
+        const walletBalance = await contract.methods.walletBalance().call({ from: account });
+        const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
+        const yieldRate = await contract.methods.yieldRate().call({ from: account });
 
-        document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether');
-        document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether');
-        document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+        document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether') + " ETH";
+        document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether') + " ETH";
+        document.getElementById("yieldRate").textContent = (yieldRate / 100).toFixed(2) + "%";
 	    console.log("Balances updated:", {
             walletBalance: web3.utils.fromWei(walletBalance, 'ether'),
             investmentBalance: web3.utils.fromWei(investmentBalance, 'ether'),
