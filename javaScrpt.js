@@ -330,8 +330,7 @@ async function withdrawFunds() {
     }
 }
 
-const gasEstimate = await contract.methods.myFunction().estimateGas({ from: account });
-const result = await contract.methods.myFunction().send({ from: account, gas: gasEstimate });
+
         // تحديث المعلومات بشكل دوري
         setInterval(updateBalances, 9000);
     
