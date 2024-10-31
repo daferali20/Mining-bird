@@ -18,29 +18,22 @@
     </div>
 
     <!-- قسم التحكم بالصفحة يظهر فقط بعد تسجيل الدخول -->
-    <div id="adminControls" style="display: none;">
-        <button onclick="approveWithdrawal()">Approve Withdrawal</button>
-        <button onclick="withdrawYield()">Withdraw Yield</button>
-        <button onclick="executeWithdrawal()">Execute Withdrawal</button>
-    </div>
+     <!-- قسم تحكم المالك -->
+    <h2>Owner Control</h2>
+    <button onclick="approveWithdrawal()">Approve Withdrawal</button>
+    <button onclick="withdrawYield()">Withdraw Yield</button>
+    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw in USDT">
+    <button onclick="executeWithdrawal()">Execute Withdrawal</button>
+    <h2>Owner Withdraw Funds</h2>
+    <input type="number" id="withdrawAmount" placeholder="Enter amount in ETH">
+    <input type="text" id="recipientAddress" placeholder="Enter recipient address">
+    <button onclick="withdrawFunds()">Withdraw</button>
 
     <!-- تحميل مكتبة Web3.js -->
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
     <!-- تحميل ملف auth.js -->
     <script src="auth.js"></script>
-    <!-- إعدادات العقد ووظائف التحكم -->
-    <script>
-        // إعداد Web3
-        let web3;
-        if (window.ethereum) {
-            web3 = new Web3(window.ethereum);
-            window.ethereum.enable();
-	    web3.eth.transactionPollingTimeout = 300; // وقت المهلة بالثواني (يمكنك ضبطه لوقت أطول)
-        } else {
-            alert("Please install MetaMask to use this DApp!");
-        }
-
-       
+              
     <!-- روابط للصفحات -->
     <div style="text-align: center; margin-top: 20px;">
         <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
