@@ -3,33 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment DApp</title>
     <link rel="stylesheet" href="styles.css">
-    <title>User Page - DApp</title>
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script> <!-- إضافة مكتبة web3.js -->
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
 <body>
-    <h1>User Page - DApp</h1>
+    <h1>Investment DApp</h1>
 
-    <!-- زر الاتصال بالمحفظة -->
+    <!-- قسم اتصال المحفظة -->
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress">Wallet Address: Not Connected</p>
 
-    <div style="text-align: center; margin-top: 20px;">
-        <input type="number" id="amountInput" placeholder="Enter amount in USDT" style="padding: 10px; font-size: 16px;">
-        <button onclick="depositAndTransfer()" style="padding: 10px 20px; font-size: 16px;">Deposit and Transfer</button>
-        <button onclick="startInvestment()">Start Investment</button>
-    </div>
-
+    <!-- واجهة المستخدم -->
+    <h2>User Interface</h2>
+    <input type="number" id="amountInput" placeholder="Enter amount in USDT">
+    <button onclick="deposit()">Deposit</button>
+    <button onclick="startInvestment()">Start Investment</button>
     <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
     <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
     <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
+
+    <!-- قسم تحكم المالك -->
+    <h2>Owner Control</h2>
+    <button onclick="approveWithdrawal()">Approve Withdrawal</button>
+    <button onclick="withdrawYield()">Withdraw Yield</button>
+    <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw in USDT">
+    <button onclick="executeWithdrawal()">Execute Withdrawal</button>
+
     <script>
         let web3;
         let account;
         let contract;
 
-        // إعداد عنوان العقد وواجهة التطبيق الثنائية
-        const contractAddress = "0x911D6fd1CeE64c84d2BcC385cb0659a70231D803"; // ضع عنوان عقدك هنا
+        const contractAddress = "0x911D6fd1CeE64c84d2BcC385cb0659a70231D803"; // ضع عنوان العقد هنا
         const contractABI = [
 	{
 		"inputs": [],
@@ -240,95 +246,92 @@
 	}
 ];
 
-       // عنوان عقد USDT وواجهة ABI الخاصة به
-        const usdtAddress = "0xdAC17F958D2ee523a2206206994597C13D831ec7"; // ضع عنوان عقد USDT هنا
-        const usdtABI = [
-            {
-                "constant": false,
-                "inputs": [
-                    { "name": "_to", "type": "address" },
-                    { "name": "_value", "type": "uint256" }
-                ],
-                "name": "transfer",
-                "outputs": [{ "name": "", "type": "bool" }],
-                "type": "function"
-            }
-        ];
-
-        // الاتصال بمحفظة المستخدم
         async function connectWallet() {
             if (window.ethereum) {
                 web3 = new Web3(window.ethereum);
-                try {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await web3.eth.getAccounts();
-                    account = accounts[0];
-                    document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
-
-                    // إعداد الكائنات للعقدين الرئيسيين
-                    contract = new web3.eth.Contract(contractABI, contractAddress);
-                    usdtContract = new web3.eth.Contract(usdtABI, usdtAddress);
-
-                    // تحديث الأرصدة بعد الاتصال
-                    updateBalances();
-                } catch (error) {
-                    console.error("User denied account access", error);
-                    alert("Could not connect to wallet. Please allow access.");
-                }
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const accounts = await web3.eth.getAccounts();
+                account = accounts[0];
+                document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+                updateBalances();
             } else {
                 alert("Please install MetaMask to connect your wallet.");
             }
         }
 
-        // دالة الإيداع والتحويل
-        async function depositAndTransfer() {
+        async function deposit() {
             const amountInput = document.getElementById("amountInput").value;
             const amount = parseFloat(amountInput);
-
             if (!amount || amount <= 0) {
                 alert("Please enter a valid amount.");
                 return;
             }
 
             try {
-                // الإيداع في العقد الذكي
                 await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
                 alert("Deposit successful!");
-
-                // تحويل الأموال باستخدام عقد USDT
-                const amountToSend = web3.utils.toWei(amount.toString(), 'mwei');
-                const receiverAddress = '0x911D6fd1CeE64c84d2BcC385cb0659a70231D803';
-                const tx = await usdtContract.methods.transfer(receiverAddress, amountToSend).send({ from: account });
-                console.log('Transaction successful:', tx);
-                alert("Transfer successful!");
+                updateBalances();
             } catch (error) {
-                console.error("Error during deposit or transfer:", error);
+                console.error("Error during deposit:", error);
                 alert("Error: " + error.message);
             }
         }
 
-        // بدء الاستثمار
         async function startInvestment() {
-            if (!account) {
-                alert("Please connect your wallet first.");
+            try {
+                await contract.methods.startInvestment().send({ from: account });
+                alert("Investment started successfully");
+                updateBalances();
+            } catch (error) {
+                console.error("Error in starting investment:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        async function approveWithdrawal() {
+            try {
+                await contract.methods.approveWithdrawal().send({ from: account });
+                alert("Withdrawal approved!");
+            } catch (error) {
+                console.error("Error in approving withdrawal:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        async function withdrawYield() {
+            try {
+                await contract.methods.withdrawYield().send({ from: account });
+                alert("Yield withdrawn successfully!");
+                updateBalances();
+            } catch (error) {
+                console.error("Error in withdrawing yield:", error);
+                alert("Error: " + error.message);
+            }
+        }
+
+        async function executeWithdrawal() {
+            const amountInput = document.getElementById("withdrawAmount").value;
+            const amount = parseFloat(amountInput);
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid amount to withdraw.");
                 return;
             }
 
-            contract.methods.startInvestment().send({ from: account })
-                .then(() => alert("Investment started successfully"))
-                .catch(error => {
-                    console.error("Error in start investment", error);
-                    alert("Error: " + error.message);
-                });
+            try {
+                await contract.methods.executeWithdrawal(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
+                alert("Withdrawal executed successfully!");
+                updateBalances();
+            } catch (error) {
+                console.error("Error in executing withdrawal:", error);
+                alert("Error: " + error.message);
+            }
         }
 
-        // تحديث الأرصدة
         async function updateBalances() {
-            if (!account || !contract) return;
-
             try {
-                const walletBalance = await contract.methods.walletBalance().call({ from: account });
-                const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
+                const walletBalance = await contract.methods.walletBalance().call();
+                const investmentBalance = await contract.methods.investmentBalance().call();
                 const yieldRate = await contract.methods.yieldRate().call();
 
                 document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'mwei');
@@ -338,15 +341,9 @@
                 console.error("Error updating balances", error);
             }
         }
-
-        // تحديث المعلومات بشكل مستمر
-        setInterval(updateBalances, 5000);
+        
+        // تحديث المعلومات بشكل دوري
+        setInterval(updateBalances, 9000);
     </script>
-
-    <!-- روابط للصفحات -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">Admin Page</button>
-        <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px;">Home Page</button>
-    </div>
 </body>
 </html>
