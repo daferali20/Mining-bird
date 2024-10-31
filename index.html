@@ -279,8 +279,9 @@ async function deposit() {
 
     try {
         // تأكد من إعداد `value` بشكل صحيح كجزء من كائن `send`
-        await contract.methods.deposit().send({
+       await web3.eth.sendTransaction({
             from: account,
+	    to: contractAddress,
             value: web3.utils.toWei(amount.toString(), 'ether') // هنا يتم تحديد `value` بالقيمة الصحيحة
         });
         
