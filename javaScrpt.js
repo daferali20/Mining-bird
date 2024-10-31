@@ -299,6 +299,21 @@ async function updateBalances() {
         console.error("Error updating balances:", error);
     }
 }
+async function withdrawFunds() {
+    const amountInput = document.getElementById("withdrawAmount").value;
+    const recipientInput = document.getElementById("recipientAddress").value;
+    const amount = web3.utils.toWei(amountInput.toString(), 'ether');
+
+    try {
+        await contract.methods.withdraw(amount, recipientInput).send({ from: account });
+        alert("Withdrawal successful!");
+        updateBalances();
+    } catch (error) {
+        console.error("Error during withdrawal:", error);
+        alert("Error: " + error.message);
+    }
+}
+
         // تحديث المعلومات بشكل دوري
         setInterval(updateBalances, 9000);
     
