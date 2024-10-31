@@ -245,7 +245,6 @@
 		"type": "function"
 	}
 ];
-
         // الاتصال بالمحفظة
 async function connectWallet() {
     if (window.ethereum) {
@@ -266,7 +265,6 @@ async function connectWallet() {
         alert("Please install MetaMask to connect your wallet.");
     }
 }
-
 // دالة الإيداع باستخدام ETH
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
@@ -292,6 +290,26 @@ async function deposit() {
         alert("Error: " + error.message);
     }
 }
+async function startInvestment() {
+    console.log("Start Investment button clicked"); // تشخيص النقر على الزر
+
+    if (!account) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+    try {
+        console.log("Calling startInvestment on contract..."); // تشخيص الوصول إلى العقد
+
+        // استدعاء الدالة startInvestment من العقد
+        await contract.methods.startInvestment().send({ from: account });
+
+        alert("Investment started successfully!");
+        updateBalances(); // تحديث الأرصدة بعد بدء الاستثمار
+    } catch (error) {
+        console.error("Error in starting investment:", error);
+        alert("Error: " + error.message);
+    }
+}
 // تحديث الأرصدة
 async function updateBalances() {
     try {
@@ -306,8 +324,6 @@ async function updateBalances() {
         console.error("Error updating balances:", error);
     }
 }
-
-
         // تحديث المعلومات بشكل دوري
         setInterval(updateBalances, 9000);
     </script>
