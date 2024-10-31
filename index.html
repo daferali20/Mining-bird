@@ -284,7 +284,11 @@
                 alert("Please install MetaMask to connect your wallet.");
             }
         }
- 
+ // دالة للحصول على حساب المستخدم من MetaMask
+async function getAccount() {
+    const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+    return accounts[0];
+}
       // دالة الإيداع والتحويل
 async function depositAndTransfer() {
     const amountInput = document.getElementById("amountInput").value;
