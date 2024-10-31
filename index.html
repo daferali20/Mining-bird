@@ -320,6 +320,11 @@ async function updateBalances() {
         document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether');
         document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether');
         document.getElementById("yieldRate").textContent = yieldRate / 100 + "%";
+	    console.log("Balances updated:", {
+            walletBalance: web3.utils.fromWei(walletBalance, 'ether'),
+            investmentBalance: web3.utils.fromWei(investmentBalance, 'ether'),
+            yieldRate: yieldRate / 100
+        });
     } catch (error) {
         console.error("Error updating balances:", error);
     }
