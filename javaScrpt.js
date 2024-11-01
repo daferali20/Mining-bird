@@ -240,27 +240,26 @@ async function connectWallet() {
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
-
+    
     if (!amount || amount <= 0) {
         alert("Please enter a valid amount.");
         return;
     }
 
     try {
-        // استدعاء دالة `deposit` بدون تقدير الغاز
+        // إرسال `value` فقط كجزء من `send` دون مدخلات إضافية إلى `deposit`
         await contract.methods.deposit().send({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether')
+            value: web3.utils.toWei(amount.toString(), 'ether') // تأكد من تحويل المبلغ إلى Wei
         });
-
+        
         alert("Deposit successful!");
-        updateBalances(); // تحديث الأرصدة بعد الإيداع
+        updateBalances();
     } catch (error) {
         console.error("Error during deposit:", error);
-        alert("Transaction failed: " + error.message);
+        alert("Error: " + error.message);
     }
 }
-
 // بدء الاستثمار
 async function startInvestment() {
     if (!account) {
