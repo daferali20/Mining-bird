@@ -3,7 +3,7 @@
         let account;
         let contract;
 
-        const contractAddress = "0x1c91347f2A44538ce62453BEBd9Aa907C662b4bD"; // ضع عنوان العقد هنا
+        const contractAddress = "0x0524371A8549Cf197c0F31E320bB48608b3A4cC9"; // ضع عنوان العقد هنا
         const contractABI = [
 	{
 		"inputs": [],
