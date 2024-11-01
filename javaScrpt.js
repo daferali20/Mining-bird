@@ -300,6 +300,7 @@ async function startInvestment() {
 
 // تحديث الأرصدة
 async function updateBalances() {
+	if (!account || !contract) return;
     try {
         // جلب الأرصدة من العقد
         const walletBalance = BigInt(await contract.methods.walletBalance().call());
