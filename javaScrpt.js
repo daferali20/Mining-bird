@@ -236,7 +236,7 @@ async function connectWallet() {
         alert("Please install MetaMask to connect your wallet.");
     }
 }
-
+//دالة الايداع
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
@@ -247,24 +247,27 @@ async function deposit() {
     }
 
     try {
-        const gasEstimate = await web3.eth.estimateGas({
+        // تقدير الغاز لدالة `deposit` على العقد
+        const gasEstimate = await contract.methods.deposit().estimateGas({
             from: account,
-            to: contractAddress,
             value: web3.utils.toWei(amount.toString(), 'ether')
         });
 
-        await web3.eth.sendTransaction({
+        // استدعاء دالة `deposit` من خلال `contract.methods`
+        await contract.methods.deposit().send({
             from: account,
-            to: contractAddress,
             value: web3.utils.toWei(amount.toString(), 'ether'),
             gas: gasEstimate
         });
+
         alert("Deposit successful!");
+        updateBalances(); // تحديث الأرصدة بعد الإيداع
     } catch (error) {
         console.error("Error during deposit:", error);
         alert("Transaction failed: " + error.message);
     }
 }
+
 
 // بدء الاستثمار
 async function startInvestment() {
