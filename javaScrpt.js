@@ -247,15 +247,10 @@ async function deposit() {
     }
 
     try {
-        // تقدير الغاز لدالة `deposit` على العقد
-        const gasEstimate = await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).estimateGas({
-            from: account
-        });
-
-        // استدعاء دالة `deposit` من خلال `contract.methods`
-        await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).send({
+        // استدعاء دالة `deposit` بدون تقدير الغاز
+        await contract.methods.deposit().send({
             from: account,
-            gas: gasEstimate
+            value: web3.utils.toWei(amount.toString(), 'ether')
         });
 
         alert("Deposit successful!");
@@ -265,7 +260,6 @@ async function deposit() {
         alert("Transaction failed: " + error.message);
     }
 }
-
 
 // بدء الاستثمار
 async function startInvestment() {
