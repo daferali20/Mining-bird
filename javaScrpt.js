@@ -304,14 +304,14 @@ async function updateBalances() {
 
 // دالة السحب
 async function withdrawFunds() {
-    const amount = web3.utils.toWei("0.0014", "ether");
-    const recipient = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
+    const amountInput = document.getElementById("withdrawAmount").value;
+    const recipientInput = document.getElementById("recipientAddress").value;
+    const amount = web3.utils.toWei(amountInput.toString(), 'ether');
 
     try {
-        const gasEstimate = await contract.methods.withdraw(amount, recipient).estimateGas({ from: account });
-
-        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
+        await contract.methods.withdraw(amount, recipientInput).send({ from: account });
         alert("Withdrawal successful!");
+        updateBalances();
     } catch (error) {
         console.error("Error during withdrawal:", error);
         alert("Error: " + error.message);
