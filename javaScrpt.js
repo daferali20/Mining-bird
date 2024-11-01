@@ -236,7 +236,7 @@ async function connectWallet() {
         alert("Please install MetaMask to connect your wallet.");
     }
 }
-//دالة الايداع
+// دالة الإيداع
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
@@ -248,15 +248,13 @@ async function deposit() {
 
     try {
         // تقدير الغاز لدالة `deposit` على العقد
-        const gasEstimate = await contract.methods.deposit().estimateGas({
-            from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether')
+        const gasEstimate = await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).estimateGas({
+            from: account
         });
 
         // استدعاء دالة `deposit` من خلال `contract.methods`
-        await web3.eth.sendTransaction({
+        await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'ether')).send({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether'),
             gas: gasEstimate
         });
 
