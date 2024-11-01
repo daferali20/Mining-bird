@@ -247,12 +247,8 @@ async function deposit() {
     }
 
     try {
-        // إرسال `value` فقط كجزء من `send` دون مدخلات إضافية إلى `deposit`
-        await contract.methods.deposit().send({
-            from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether') // تأكد من تحويل المبلغ إلى Wei
-        });
-        
+        // إرسال  
+       await contract.methods.deposit(web3.utils.toWei(amount.toString(), 'mwei')).send({ from: account });
         alert("Deposit successful!");
         updateBalances();
     } catch (error) {
