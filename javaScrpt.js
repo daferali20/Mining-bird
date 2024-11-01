@@ -237,7 +237,6 @@ async function connectWallet() {
     }
 }
 
-// دالة الإيداع باستخدام ETH
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
@@ -260,12 +259,10 @@ async function deposit() {
             value: web3.utils.toWei(amount.toString(), 'ether'),
             gas: gasEstimate
         });
-
         alert("Deposit successful!");
-        updateBalances();
     } catch (error) {
         console.error("Error during deposit:", error);
-        alert("Error: " + error.message);
+        alert("Transaction failed: " + error.message);
     }
 }
 
