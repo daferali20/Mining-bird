@@ -247,16 +247,16 @@ async function deposit() {
     }
 
     try {
-        // تقدير الغاز لدالة `deposit` على العقد
+        // تقدير الغاز لدالة `deposit` على العقد دون تمرير قيمة كمعامل
         const gasEstimate = await contract.methods.deposit().estimateGas({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether') // تعيين `msg.value` للإيداع
+            value: web3.utils.toWei(amount.toString(), 'ether')
         });
 
-        // استدعاء دالة `deposit` من خلال `contract.methods`
+        // استدعاء دالة `deposit` من خلال `contract.methods` مع إرسال `value` فقط
         await contract.methods.deposit().send({
             from: account,
-            value: web3.utils.toWei(amount.toString(), 'ether'), // إرسال `msg.value` كقيمة للإيداع
+            value: web3.utils.toWei(amount.toString(), 'ether'), // إرسال المبلغ باستخدام `msg.value`
             gas: gasEstimate
         });
 
