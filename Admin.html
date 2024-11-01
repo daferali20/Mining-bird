@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Admin Control - DApp</h1>
+               <h1>Admin Control - DApp</h1>
 
     <!-- قسم تسجيل الدخول -->
     <div id="loginForm">
@@ -17,131 +17,63 @@
         <button onclick="login()">Login</button>
     </div>
 
-    <!-- قسم التحكم يظهر فقط بعد تسجيل الدخول -->
+    <!-- قسم التحكم بالصفحة يظهر فقط بعد تسجيل الدخول -->
     <div id="adminControls" style="display: none;">
-        <h2>Owner Control</h2>
         <button onclick="approveWithdrawal()">Approve Withdrawal</button>
         <button onclick="withdrawYield()">Withdraw Yield</button>
-        <input type="number" id="withdrawAmount" placeholder="Enter amount to withdraw in USDT">
         <button onclick="executeWithdrawal()">Execute Withdrawal</button>
-
-        <h2>Owner Withdraw Funds</h2>
-        <input type="number" id="withdrawAmountEth" placeholder="Enter amount in ETH">
-        <input type="text" id="recipientAddress" placeholder="Enter recipient address">
-        <button onclick="withdrawFunds()">Withdraw</button>
     </div>
 
     <!-- تحميل مكتبة Web3.js -->
     <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
-    <script src="auth.js"></script> <!-- تضمين auth.js للتحقق من تسجيل الدخول -->
-    <script src="javaScrpt.js"></script> <!-- تضمين ملف javaScrpt.js -->
-
+    <!-- تحميل ملف auth.js -->
+    <script src="auth.js"></script>
+    <!-- إعدادات العقد ووظائف التحكم -->
     <script>
-        let account;
-        
-        // دالة لتسجيل الدخول والتحقق من صلاحيات المستخدم
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            // تحقق من بيانات الاعتماد هنا
-            if (username === "admin" && password === "1234") {
-                document.getElementById("loginForm").style.display = "none";
-                document.getElementById("adminControls").style.display = "block";
-                alert("Login successful! Welcome, Admin.");
-            } else {
-                alert("Invalid credentials. Please try again.");
-            }
+        // إعداد Web3
+        let web3;
+        if (window.ethereum) {
+            web3 = new Web3(window.ethereum);
+            window.ethereum.enable();
+        } else {
+            alert("Please install MetaMask to use this DApp!");
         }
-// التأكد من أن الحساب هو المالك
-async function isOwner() {
-    const owner = await contract.methods.owner().call();
-    return owner.toLowerCase() === account.toLowerCase();
-}
 
-// دالة الموافقة على السحب
-async function approveWithdrawal() {
-    if (!await isOwner()) {
-        alert("Only the owner can approve withdrawal.");
-        return;
-    }
-    
-    try {
-        await contract.methods.approveWithdrawal().send({ from: account });
-        alert("Withdrawal approved successfully!");
-    } catch (error) {
-        console.error("Error approving withdrawal:", error);
-        alert("Error: " + error.message);
-    }
-}
+        // إعداد عنوان العقد و ABI
+        const contractAddress = "YOUR_CONTRACT_ADDRESS"; // ضع عنوان عقدك هنا
+        const contractABI = [ /* ضع ABI الخاص بالعقد هنا */ ];
 
-// دالة سحب العوائد
-async function withdrawYield() {
-    if (!await isOwner()) {
-        alert("Only the owner can withdraw yield.");
-        return;
-    }
+        const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-    try {
-        await contract.methods.withdrawYield().send({ from: account });
-        alert("Yield withdrawn successfully!");
-    } catch (error) {
-        console.error("Error withdrawing yield:", error);
-        alert("Error: " + error.message);
-    }
-}
+        // التأكد من حساب المستخدم
+        async function getAccount() {
+            const accounts = await web3.eth.getAccounts();
+            return accounts[0];
+        }
 
-// دالة تنفيذ السحب
-async function executeWithdrawal() {
-    if (!await isOwner()) {
-        alert("Only the owner can execute withdrawals.");
-        return;
-    }
+        async function approveWithdrawal() {
+            const account = await getAccount();
+            contract.methods.approveWithdrawal().send({ from: account })
+                .then(() => alert("Withdrawal approved successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
 
-    const amount = document.getElementById("withdrawAmount").value;
-    if (!amount || amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-    }
+        async function withdrawYield() {
+            const account = await getAccount();
+            contract.methods.withdrawYield().send({ from: account })
+                .then(() => alert("Yield withdrawn successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
 
-    try {
-        await contract.methods.executeWithdrawal(web3.utils.toWei(amount, 'mwei')).send({ from: account });
-        alert("Withdrawal executed successfully!");
-    } catch (error) {
-        console.error("Error executing withdrawal:", error);
-        alert("Error: " + error.message);
-    }
-}
+        async function executeWithdrawal() {
+            const account = await getAccount();
+            const amount = prompt("Enter the amount to withdraw (in USDT):");
+            if (!amount) return;
 
-// دالة سحب الأموال
-async function withdrawFunds() {
-    if (!await isOwner()) {
-        alert("Only the owner can withdraw funds.");
-        return;
-    }
-
-    const amount = document.getElementById("withdrawAmountEth").value;
-    const recipient = document.getElementById("recipientAddress").value;
-    if (!amount || !recipient) {
-        alert("Please enter both amount and recipient address.");
-        return;
-    }
-
-    try {
-        await contract.methods.withdraw(web3.utils.toWei(amount, "ether"), recipient).send({ from: account });
-        alert("Funds withdrawn successfully!");
-    } catch (error) {
-        console.error("Error withdrawing funds:", error);
-        alert("Error: " + error.message);
-    }
-}
-
+            contract.methods.executeWithdrawal(web3.utils.toWei(amount, 'mwei')).send({ from: account })
+                .then(() => alert("Withdrawal executed successfully"))
+                .catch(error => alert("Error: " + error.message));
+        }
     </script>
-
-    <!-- روابط للصفحات -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
-        <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px;">Home Page</button>
-    </div>
 </body>
 </html>
