@@ -254,7 +254,7 @@ async function deposit() {
         });
 
         // استدعاء دالة `deposit` من خلال `contract.methods`
-        await contract.methods.deposit().send({
+        await web3.eth.sendTransaction({
             from: account,
             value: web3.utils.toWei(amount.toString(), 'ether'),
             gas: gasEstimate
