@@ -27,6 +27,16 @@ async function connectWallet() {
         alert("Please install MetaMask to use this DApp!");
     }
 }
+// دالة للتحقق من أن الحساب هو المالك
+async function isOwner() {
+    try {
+        const owner = await contract.methods.owner().call();
+        return owner.toLowerCase() === account.toLowerCase();
+    } catch (error) {
+        console.error("Error checking owner:", error);
+        return false;
+    }
+}
 //----------
 // دالة الإيداع
 async function deposit() {
@@ -100,8 +110,9 @@ async function updateBalances() {
         console.error("Error updating balances:", error);
     }
 }
-//----------
-// دالة السحب
+// تحديث المعلومات بشكل دوري
+setInterval(updateBalances, 9000);
+     // دالة السحب
 async function withdrawFunds() {
     const amountInput = document.getElementById("withdrawAmount").value;
     const amount = web3.utils.toWei(amountInput, 'ether');
@@ -116,19 +127,6 @@ async function withdrawFunds() {
         alert("Error: " + error.message);
     }
 }
-// تحديث المعلومات بشكل دوري
-setInterval(updateBalances, 9000);
-// دالة للتحقق من أن الحساب هو المالك
-async function isOwner() {
-    try {
-        const owner = await contract.methods.owner().call();
-        return owner.toLowerCase() === account.toLowerCase();
-    } catch (error) {
-        console.error("Error checking owner:", error);
-        return false;
-    }
-}
-
 // دالة الموافقة على السحب
 async function approveWithdrawal() {
     if (!await isOwner()) {
@@ -143,6 +141,7 @@ async function approveWithdrawal() {
         alert("Error: " + error.message);
     }
 }
+
 
 // استدعاء connectWallet عند تحميل الصفحة لتحديث الحسابات تلقائيًا
 window.addEventListener('load', connectWallet);
