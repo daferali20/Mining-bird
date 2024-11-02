@@ -1,7 +1,3 @@
-       let web3;
-        let account;
-        let contract;
-
         const contractAddress = "0xd1977eEF9c4941820ef2bEe8AB896Be1534578Bc"; // ضع عنوان العقد هنا
         const contractABI = [
 	{
