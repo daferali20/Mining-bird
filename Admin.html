@@ -22,6 +22,10 @@
         <button onclick="approveWithdrawal()">Approve Withdrawal</button>
         <button onclick="withdrawYield()">Withdraw Yield</button>
         <button onclick="executeWithdrawal()">Execute Withdrawal</button>
+        <h2>Owner Withdraw Funds</h2>
+        <input type="number" id="withdrawAmount" placeholder="Enter amount in ETH">
+        <input type="text" id="recipientAddress" placeholder="Enter recipient address">
+        <button onclick="withdrawFunds()">Withdraw</button>
     </div>
 
     <!-- تحميل مكتبة Web3.js -->
@@ -29,6 +33,7 @@
     <!-- تحميل ملف auth.js -->
     <script src="auth.js"></script>
     <!-- إعدادات العقد ووظائف التحكم -->
+    
     <script>
         // إعداد Web3
         let web3;
