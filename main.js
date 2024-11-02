@@ -6,18 +6,14 @@ let contract;
 // الاتصال بمحفظة MetaMask
 async function connectWallet() {
     if (window.ethereum) {
+        web3 = new Web3(window.ethereum);
         try {
-            // يطلب الإذن للوصول إلى الحسابات
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            console.log("Connected account:", accounts[0]);
-        } catch (error) {
-            console.error("User denied account access", error);
-        }
-    } else {
-        alert("Please install MetaMask to use this feature.");
-    }
-}
-
+            // طلب الاتصال بحساب MetaMask
+            await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const accounts = await web3.eth.getAccounts();
+            account = accounts[0];
+            console.log("Connected account:", account);
+		
             // إعداد العقد باستخدام `contractAddress` و `contractABI`
             if (typeof contractAddress !== 'undefined' && typeof contractABI !== 'undefined') {
                 contract = new web3.eth.Contract(contractABI, contractAddress);
