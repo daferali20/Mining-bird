@@ -98,7 +98,7 @@ async function updateBalances() {
         // العثور على عنصر walletBalance والتحقق من وجوده قبل التحديث
         const walletBalanceElement = document.getElementById("walletBalance");
         if (walletBalanceElement) {
-            walletBalanceElement.textContent = (walletBalance / BigInt(1e18)).toString() + " ETH";
+            walletBalanceElement.textContent = (BigInt(walletBalance) / BigInt(1e18)).toString() + " ETH";
         } else {
             console.warn("Element with ID 'walletBalance' not found in HTML.");
         }
@@ -106,7 +106,7 @@ async function updateBalances() {
         // العثور على عنصر investmentBalance والتحقق من وجوده قبل التحديث
         const investmentBalanceElement = document.getElementById("investmentBalance");
         if (investmentBalanceElement) {
-            investmentBalanceElement.textContent = (investmentBalance / BigInt(1e18)).toString() + " ETH";
+            investmentBalanceElement.textContent = (BigInt(investmentBalance) / BigInt(1e18)).toString() + " ETH";
         } else {
             console.warn("Element with ID 'investmentBalance' not found in HTML.");
         }
@@ -120,8 +120,8 @@ async function updateBalances() {
         }
 
         console.log("Balances updated:", {
-            walletBalance: (walletBalance / BigInt(1e18)).toString(),
-            investmentBalance: (investmentBalance / BigInt(1e18)).toString(),
+            walletBalance: (BigInt(walletBalance) / BigInt(1e18)).toString(),
+            investmentBalance: (BigInt(investmentBalance) / BigInt(1e18)).toString(),
             yieldRate: yieldRate / 100
         });
     } catch (error) {
