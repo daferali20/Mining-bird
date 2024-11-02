@@ -321,21 +321,103 @@ async function updateBalances() {
         console.error("Error updating balances:", error);
     }
 }
-// دالة السحب
-async function withdrawFunds() {
-    const amountInput = document.getElementById("withdrawAmount").value;
-    const amount = web3.utils.toWei(amountInput, 'ether');
-    const recipient = "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
-
-    try {
-        const gasEstimate = await contract.methods.withdraw(amount, recipient).estimateGas({ from: account });
-        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
-        alert("Withdrawal successful!");
-    } catch (error) {
-        console.error("Error during withdrawal:", error);
-        alert("Error: " + error.message);
-    }
-}
+//----------
 
 // تحديث المعلومات بشكل دوري
 setInterval(updateBalances, 9000);
+// إعداد العقد
+                contract = new web3.eth.Contract(contractABI, contractAddress);
+            }).catch(error => {
+                displayError("MetaMask connection error: " + error.message);
+            });
+        } else {
+            alert("Please install MetaMask to use this DApp!");
+        }
+
+        // عرض رسائل الخطأ
+        function displayError(message) {
+            const errorDisplay = document.getElementById("errorDisplay");
+            errorDisplay.style.display = "block";
+            errorDisplay.innerText = message;
+            console.error(message);
+        }
+
+        // التحقق من أن الحساب هو المالك
+        async function isOwner() {
+            try {
+                const owner = await contract.methods.owner().call();
+                return owner.toLowerCase() === account.toLowerCase();
+            } catch (error) {
+                displayError("Error checking owner: " + error.message);
+                return false;
+            }
+        }
+
+        // دالة الموافقة على السحب
+        async function approveWithdrawal() {
+            if (!await isOwner()) {
+                displayError("Only the owner can approve withdrawal.");
+                return;
+            }
+            try {
+                await contract.methods.approveWithdrawal().send({ from: account });
+                alert("Withdrawal approved successfully!");
+            } catch (error) {
+                displayError("Error approving withdrawal: " + error.message);
+            }
+        }
+
+        // دالة سحب العوائد
+        async function withdrawYield() {
+            if (!await isOwner()) {
+                displayError("Only the owner can withdraw yield.");
+                return;
+            }
+            try {
+                await contract.methods.withdrawYield().send({ from: account });
+                alert("Yield withdrawn successfully!");
+            } catch (error) {
+                displayError("Error withdrawing yield: " + error.message);
+            }
+        }
+
+        // دالة تنفيذ السحب
+        async function executeWithdrawal() {
+            if (!await isOwner()) {
+                displayError("Only the owner can execute withdrawals.");
+                return;
+            }
+            const amount = document.getElementById("withdrawAmountEth").value;
+            if (!amount || amount <= 0) {
+                displayError("Please enter a valid amount.");
+                return;
+            }
+            try {
+                await contract.methods.executeWithdrawal(web3.utils.toWei(amount, 'mwei')).send({ from: account });
+                alert("Withdrawal executed successfully!");
+            } catch (error) {
+                displayError("Error executing withdrawal: " + error.message);
+            }
+        }
+
+        // دالة سحب الأموال
+        async function withdrawFunds() {
+            if (!await isOwner()) {
+                displayError("Only the owner can withdraw funds.");
+                return;
+            }
+            const amount = document.getElementById("withdrawAmountEth").value;
+            const recipient = document.getElementById("recipientAddress").value;
+            if (!amount || !recipient) {
+                displayError("Please enter both amount and recipient address.");
+                return;
+            }
+            try {
+                await contract.methods.withdraw(web3.utils.toWei(amount, "ether"), recipient).send({ from: account });
+                alert("Funds withdrawn successfully!");
+            } catch (error) {
+                displayError("Error withdrawing funds: " + error.message);
+            }
+        }
+
+       
