@@ -12,15 +12,15 @@
     <!-- قسم اتصال المحفظة -->
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress">Wallet Address: Not Connected</p>
-	
+    <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
+    <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
+    <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
     <!-- واجهة المستخدم -->
     <h2>User Interface</h2>
     <input type="number" id="amountInput" placeholder="Enter amount in USDT">
     <button onclick="deposit()">Deposit</button>
     <button onclick="startInvestment()">Start Investment</button>
-    <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
-    <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
-    <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
+    
 
    <!-- تحميل مكتبة Web3.js -->
    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
