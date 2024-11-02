@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Investment DApp</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
 </head>
 <body>
     <h1>Investment DApp</h1>
@@ -13,11 +12,7 @@
     <!-- قسم اتصال المحفظة -->
     <button onclick="connectWallet()">Connect Wallet</button>
     <p id="walletAddress">Wallet Address: Not Connected</p>
-  <!-- تضمين ملف javaScrpt.js في نهاية المستند -->
-   <script src="javaa.js"></script>
-    <!-- تحميل الملف الرئيسي -->
-    <script src="main.js"></script>
-    <!-- تحميل مكتبة Web3.js -->
+	
     <!-- واجهة المستخدم -->
     <h2>User Interface</h2>
     <input type="number" id="amountInput" placeholder="Enter amount in USDT">
@@ -27,7 +22,13 @@
     <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
     <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
 
-   
+   <!-- تحميل مكتبة Web3.js -->
+   <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+  <!-- تضمين ملف javaScrpt.js في نهاية المستند -->
+   <script src="javaa.js"></script>
+    <!-- تحميل الملف الرئيسي -->
+    <script src="main.js"></script>
+    <!-- تحميل مكتبة Web3.js -->
 	<!-- روابط للصفحات -->
     <div style="text-align: center; margin-top: 20px;">
         <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
