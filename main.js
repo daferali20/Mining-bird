@@ -3,23 +3,7 @@ let web3;
 let account;
 let contract;
 
-if (window.ethereum) {
-    web3 = new Web3(window.ethereum);
-    window.ethereum.enable().then(accounts => {
-        account = accounts[0];
-        // إعداد العقد باستخدام `contractAddress` و `contractABI`
-        contract = new web3.eth.Contract(contractABI, contractAddress);
-    }).catch(error => {
-        console.error("MetaMask connection error: " + error.message);
-    });
-} else {
-    alert("Please install MetaMask to use this DApp!");
-}
-
-let web3;
-let account;
-let contract;
-
+// الاتصال بمحفظة MetaMask
 async function connectWallet() {
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
@@ -29,7 +13,7 @@ async function connectWallet() {
             account = accounts[0];
             console.log("Connected account:", account);
 
-            // إعداد الكائن contract
+            // إعداد العقد باستخدام `contractAddress` و `contractABI`
             if (typeof contractAddress !== 'undefined' && typeof contractABI !== 'undefined') {
                 contract = new web3.eth.Contract(contractABI, contractAddress);
                 console.log("Contract loaded:", contract);
@@ -55,7 +39,7 @@ async function isOwner() {
     }
 }
 
-// الدوال الأخرى، مثل approveWithdrawal, withdrawYield, executeWithdrawal, withdrawFunds
+// دالة الموافقة على السحب
 async function approveWithdrawal() {
     if (!await isOwner()) {
         alert("Only the owner can approve withdrawal.");
