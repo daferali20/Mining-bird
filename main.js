@@ -87,7 +87,6 @@ async function startInvestment() {
     }
 }
 
-// تحديث الأرصدة
 async function updateBalances() {
 	if (!account || !contract) return;
     try {
@@ -96,10 +95,29 @@ async function updateBalances() {
         const investmentBalance = BigInt(await contract.methods.investmentBalance().call());
         const yieldRate = parseInt(await contract.methods.yieldRate().call(), 10);
 
-        // تحويل BigInt إلى String عند العرض
-        document.getElementById("walletBalance").textContent = (walletBalance / BigInt(1e18)).toString() + " ETH";
-        document.getElementById("investmentBalance").textContent = (investmentBalance / BigInt(1e18)).toString() + " ETH";
-        document.getElementById("yieldRate").textContent = (yieldRate / 100).toFixed(2) + "%";
+        // العثور على عنصر walletBalance والتحقق من وجوده قبل التحديث
+        const walletBalanceElement = document.getElementById("walletBalance");
+        if (walletBalanceElement) {
+            walletBalanceElement.textContent = (walletBalance / BigInt(1e18)).toString() + " ETH";
+        } else {
+            console.warn("Element with ID 'walletBalance' not found in HTML.");
+        }
+
+        // العثور على عنصر investmentBalance والتحقق من وجوده قبل التحديث
+        const investmentBalanceElement = document.getElementById("investmentBalance");
+        if (investmentBalanceElement) {
+            investmentBalanceElement.textContent = (investmentBalance / BigInt(1e18)).toString() + " ETH";
+        } else {
+            console.warn("Element with ID 'investmentBalance' not found in HTML.");
+        }
+
+        // العثور على عنصر yieldRate والتحقق من وجوده قبل التحديث
+        const yieldRateElement = document.getElementById("yieldRate");
+        if (yieldRateElement) {
+            yieldRateElement.textContent = (yieldRate / 100).toFixed(2) + "%";
+        } else {
+            console.warn("Element with ID 'yieldRate' not found in HTML.");
+        }
 
         console.log("Balances updated:", {
             walletBalance: (walletBalance / BigInt(1e18)).toString(),
@@ -110,6 +128,7 @@ async function updateBalances() {
         console.error("Error updating balances:", error);
     }
 }
+
 // تحديث المعلومات بشكل دوري
 setInterval(updateBalances, 9000);
      // دالة السحب
