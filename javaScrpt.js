@@ -322,7 +322,8 @@ async function updateBalances() {
     }
 }
 //----------
-
+console.log("Contract Address:", contractAddress);
+console.log("Contract ABI:", contractABI);
 // تحديث المعلومات بشكل دوري
 setInterval(updateBalances, 9000);
 // إعداد العقد
