@@ -134,34 +134,31 @@ async function updateBalances() {
 setInterval(updateBalances, 9000);
      // دالة السحب
 async function withdrawFunds() {
-    // الحصول على المدخلات من المستخدم
     const amountInput = document.getElementById("withdrawAmount").value;
-    const recipient = document.getElementById("recipientAddress").value || "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3"; // عنوان افتراضي إن لم يُدخل المستخدم عنوانًا
+    const recipient = document.getElementById("recipientAddress").value || "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";
 
-    // التحقق من صحة المدخلات
     if (!amountInput || amountInput <= 0) {
         alert("Please enter a valid amount.");
         return;
     }
-    if (!recipient) {
+
+    if (!web3.utils.isAddress(recipient)) {
         alert("Please enter a valid recipient address.");
         return;
     }
 
     try {
-        // تحويل المبلغ إلى wei
         const amount = web3.utils.toWei(amountInput, 'ether');
-        
-        // تقدير الغاز وإرسال المعاملة
         const gasEstimate = await contract.methods.withdraw(amount, recipient).estimateGas({ from: account });
-        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
         
+        await contract.methods.withdraw(amount, recipient).send({ from: account, gas: gasEstimate });
         alert("Withdrawal successful!");
     } catch (error) {
         console.error("Error during withdrawal:", error);
         alert("Error: " + error.message);
     }
 }
+
 // دالة الموافقة على السحب
 async function approveWithdrawal() {
     if (!await isOwner()) {
