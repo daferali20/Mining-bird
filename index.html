@@ -7,34 +7,60 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Investment DApp</h1>
+    <header>
+        <h1>Investment DApp</h1>
+        <p>Decentralized Investment & Yield Dashboard</p>
+    </header>
 
-    <!-- قسم اتصال المحفظة -->
-    <button onclick="connectWallet()">Connect Wallet</button>
-    <p id="walletAddress">Wallet Address: Not Connected</p>
-    <p>Wallet Balance: <span id="walletBalance">Loading...</span> USDT</p>
-    <p>Investment Balance: <span id="investmentBalance">Loading...</span> USDT</p>
-    <p>Yield Rate: <span id="yieldRate">Loading...</span> %</p>
-    <!-- واجهة المستخدم -->
-    <h2>User Interface</h2>
-    <input type="number" id="amountInput" placeholder="Enter amount in USDT">
-    <button onclick="deposit()">Deposit</button>
-    <button onclick="startInvestment()">Start Investment</button>
-    
+    <div class="container">
+        <!-- Wallet Connection Card -->
+        <div class="card">
+            <h2>Wallet Status</h2>
+            <button class="btn btn-success" onclick="connectWallet()">Connect Wallet</button>
+            <p id="walletAddress" style="margin-top: 0.75rem; font-weight: 500;">Wallet Address: Not Connected</p>
 
-   <!-- تحميل مكتبة Web3.js -->
-   <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
-  <!-- تضمين ملف javaScrpt.js في نهاية المستند -->
-   <script src="javaa.js"></script>
-    <!-- تحميل الملف الرئيسي -->
-    <script src="main.js"></script>
-    <!-- تحميل مكتبة Web3.js -->
-	<!-- روابط للصفحات -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button onclick="window.location.href='Admin.html'" style="padding: 10px 20px; font-size: 16px;">User Page</button>
-        <button onclick="window.location.href='index.html'" style="padding: 10px 20px; font-size: 16px;">Home Page</button>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <label>Wallet Balance</label>
+                    <span id="walletBalance">Loading...</span>
+                </div>
+                <div class="stat-box">
+                    <label>Investment Balance</label>
+                    <span id="investmentBalance">Loading...</span>
+                </div>
+                <div class="stat-box">
+                    <label>Yield Rate</label>
+                    <span id="yieldRate">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Actions Card -->
+        <div class="card">
+            <h2>Investment Portal</h2>
+            <div class="form-group">
+                <label for="amountInput">Deposit Amount (ETH)</label>
+                <input type="number" id="amountInput" placeholder="Enter amount in ETH" step="0.01" min="0">
+            </div>
+            <div>
+                <button class="btn" onclick="deposit()">Deposit</button>
+                <button class="btn btn-secondary" onclick="startInvestment()">Start Investment</button>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="nav-bar">
+            <button class="btn" onclick="window.location.href='index.html'">Home Page</button>
+            <button class="btn btn-secondary" onclick="window.location.href='Admin.html'">Admin Page</button>
+        </div>
     </div>
-	
-  
+
+    <!-- Notification Toast -->
+    <div id="toastNotification"></div>
+
+    <!-- Web3 & Scripts -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.37/dist/web3.min.js"></script>
+    <script src="javaa.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
