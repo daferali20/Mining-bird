@@ -1,49 +1,204 @@
-body {
-    font-family: Arial, sans-serif;
+/* Base & Typography */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-.navbar {
-    background-color: #333;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #fff;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    flex: 1;
+}
+
+/* Cards */
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    font-size: 1.4rem;
+    color: #1e3c72;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #eef2f5;
+    padding-bottom: 0.5rem;
+}
+
+/* Grid Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     padding: 1rem;
-}
-
-.navbar button {
-    color: white;
-    background-color: #333;
-    border: none;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.navbar button:hover {
-    color: #00FF00;
-}
-
-.page {
-    display: none;
-    padding: 2rem;
     text-align: center;
 }
 
-.page.active {
+.stat-box label {
+    font-size: 0.85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: block;
+    margin-bottom: 0.3rem;
 }
 
-button {
-    padding: 0.5rem 1rem;
+.stat-box span {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* Forms & Inputs */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    color: #475569;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
     font-size: 1rem;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-button:hover {
-    background-color: #45a049;
+input:focus {
+    outline: none;
+    border-color: #2a5298;
+    box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.15);
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #2a5298;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn:hover {
+    background-color: #1e3c72;
+}
+
+.btn:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    background-color: #64748b;
+}
+
+.btn-secondary:hover {
+    background-color: #475569;
+}
+
+.btn-success {
+    background-color: #10b981;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+.btn-danger {
+    background-color: #ef4444;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+/* Navigation */
+.nav-bar {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.nav-bar .btn {
+    min-width: 130px;
+    text-align: center;
+}
+
+/* Notifications */
+#toastNotification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: #fff;
+    background: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 1000;
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 0 0.5rem;
+    }
+    .card {
+        padding: 1rem;
+    }
 }
