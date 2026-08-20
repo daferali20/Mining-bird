@@ -92,14 +92,14 @@ async function updateBalances() {
 	if (!account || !contract) return;
     try {
         // جلب الأرصدة من العقد
-        const walletBalance = BigInt(await contract.methods.walletBalance().call());
-        const investmentBalance = BigInt(await contract.methods.investmentBalance().call());
+        const walletBalance = await contract.methods.walletBalance().call();
+        const investmentBalance = await contract.methods.investmentBalance().call();
         const yieldRate = parseInt(await contract.methods.yieldRate().call(), 10);
 
         // العثور على عنصر walletBalance والتحقق من وجوده قبل التحديث
         const walletBalanceElement = document.getElementById("walletBalance");
         if (walletBalanceElement) {
-            walletBalanceElement.textContent = (BigInt(walletBalance) / BigInt(1e18)).toString() + " ETH";
+            walletBalanceElement.textContent = web3.utils.fromWei(walletBalance.toString(), 'ether') + " ETH";
         } else {
             console.warn("Element with ID 'walletBalance' not found in HTML.");
         }
@@ -107,7 +107,7 @@ async function updateBalances() {
         // العثور على عنصر investmentBalance والتحقق من وجوده قبل التحديث
         const investmentBalanceElement = document.getElementById("investmentBalance");
         if (investmentBalanceElement) {
-            investmentBalanceElement.textContent = (BigInt(investmentBalance) / BigInt(1e18)).toString() + " ETH";
+            investmentBalanceElement.textContent = web3.utils.fromWei(investmentBalance.toString(), 'ether') + " ETH";
         } else {
             console.warn("Element with ID 'investmentBalance' not found in HTML.");
         }
@@ -121,8 +121,8 @@ async function updateBalances() {
         }
 
         console.log("Balances updated:", {
-            walletBalance: (BigInt(walletBalance) / BigInt(1e18)).toString(),
-            investmentBalance: (BigInt(investmentBalance) / BigInt(1e18)).toString(),
+            walletBalance: web3.utils.fromWei(walletBalance.toString(), 'ether'),
+            investmentBalance: web3.utils.fromWei(investmentBalance.toString(), 'ether'),
             yieldRate: yieldRate / 100
         });
     } catch (error) {
@@ -132,7 +132,44 @@ async function updateBalances() {
 
 // تحديث المعلومات بشكل دوري
 setInterval(updateBalances, 9000);
-     // دالة السحب
+
+// دالة سحب الأرباح/العائد
+async function withdrawYield() {
+    if (!account || !contract) {
+        alert("Please connect your wallet first.");
+        return;
+    }
+    try {
+        const gasEstimate = await contract.methods.withdrawYield().estimateGas({ from: account });
+        await contract.methods.withdrawYield().send({ from: account, gas: gasEstimate });
+        alert("Yield withdrawn successfully!");
+        updateBalances();
+    } catch (error) {
+        console.error("Error withdrawing yield:", error);
+        alert("Error: " + error.message);
+    }
+}
+
+// دالة تنفيذ السحب
+async function executeWithdrawal() {
+    const amountInput = document.getElementById("withdrawAmount") ? document.getElementById("withdrawAmount").value : prompt("Enter amount in ETH to withdraw:");
+    if (!amountInput || parseFloat(amountInput) <= 0) {
+        alert("Please enter a valid amount.");
+        return;
+    }
+    try {
+        const amount = web3.utils.toWei(amountInput.toString(), 'ether');
+        const gasEstimate = await contract.methods.executeWithdrawal(amount).estimateGas({ from: account });
+        await contract.methods.executeWithdrawal(amount).send({ from: account, gas: gasEstimate });
+        alert("Withdrawal executed successfully!");
+        updateBalances();
+    } catch (error) {
+        console.error("Error executing withdrawal:", error);
+        alert("Error: " + error.message);
+    }
+}
+
+// دالة السحب
 async function withdrawFunds() {
     const amountInput = document.getElementById("withdrawAmount").value;
     const recipient = document.getElementById("recipientAddress").value || "0x0DD5C4c9B169317BF0B77D927d2cB1eC3570Dbb3";

@@ -21,9 +21,12 @@ from IPython.display import display
 """),
 
     v4.new_code_cell("""
-# 🔐 أدخل مفاتيحك هنا
-openai.api_key = "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"
-alpha_vantage_key = "X5QLR930PG6ONM5H"),
+import os
+
+# 🔐 أدخل مفاتيحك هنا عبر متغيرة البيئة أو استبدل القيمة
+openai.api_key = os.environ.get("OPENAI_API_KEY", "YOUR_OPENAI_API_KEY")
+alpha_vantage_key = os.environ.get("ALPHA_VANTAGE_KEY", "YOUR_ALPHA_VANTAGE_KEY")
+"""),
 
     v4.new_code_cell("""
 def get_stock_data(symbol):
