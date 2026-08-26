@@ -132,9 +132,14 @@ async function startInvestment() {
 async function updateBalances() {
     if (!account || !contract) return;
     try {
-        const walletBalance = await contract.methods.walletBalance().call();
-        const investmentBalance = await contract.methods.investmentBalance().call();
-        const yieldRate = parseInt(await contract.methods.yieldRate().call(), 10);
+        // Performance optimization (Bolt ⚡): Fetch independent RPC contract calls in parallel using Promise.all
+        // This reduces balance refresh network latency by ~66% compared to sequential awaits.
+        const [walletBalance, investmentBalance, rawYieldRate] = await Promise.all([
+            contract.methods.walletBalance().call(),
+            contract.methods.investmentBalance().call(),
+            contract.methods.yieldRate().call()
+        ]);
+        const yieldRate = parseInt(rawYieldRate, 10);
 
         const walletBalanceElement = document.getElementById("walletBalance");
         if (walletBalanceElement) {
