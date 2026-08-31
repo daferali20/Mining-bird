@@ -132,9 +132,14 @@ async function startInvestment() {
 async function updateBalances() {
     if (!account || !contract) return;
     try {
-        const walletBalance = await contract.methods.walletBalance().call();
-        const investmentBalance = await contract.methods.investmentBalance().call();
-        const yieldRate = parseInt(await contract.methods.yieldRate().call(), 10);
+        // ⚡ Bolt Optimization: Fetch contract data concurrently using Promise.all
+        // to reduce network latency/RPC round-trips from ~3x network latency to ~1x network latency.
+        const [walletBalance, investmentBalance, rawYieldRate] = await Promise.all([
+            contract.methods.walletBalance().call(),
+            contract.methods.investmentBalance().call(),
+            contract.methods.yieldRate().call()
+        ]);
+        const yieldRate = parseInt(rawYieldRate, 10);
 
         const walletBalanceElement = document.getElementById("walletBalance");
         if (walletBalanceElement) {
