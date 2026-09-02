@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "dom.asynciterable", "deno.ns"]
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-unused-vars",
+        "no-window",
+        "no-window-prefix"
+      ]
+    }
+  }
+}
