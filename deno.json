@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "deno.window"]
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-unused-vars",
+        "no-window",
+        "no-window-prefix"
+      ]
+    }
+  }
+}
