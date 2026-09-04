@@ -1,5 +1,5 @@
 Deno.test("updateBalances concurrent calls test", async () => {
-  let calls = [];
+  const calls = [];
   const mockCall = (name) => () => {
     calls.push(name);
     return Promise.resolve("1000000000000000000");
